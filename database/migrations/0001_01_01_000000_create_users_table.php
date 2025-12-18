@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('username')->unique(); // 
+            $table->string('username')->unique();
+            $table->string('email')->unique(); // Tambahkan baris ini
             $table->string('password');
-            $table->enum('role', ['Admin', 'TU', 'Guru', 'Siswa']); // 
+            $table->enum('role', ['Admin', 'TU', 'Guru', 'Siswa']);
             $table->rememberToken();
             $table->timestamps();
         });
