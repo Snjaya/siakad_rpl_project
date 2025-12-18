@@ -15,6 +15,7 @@
     </div>
 
     <div class="flex-1 px-4 py-6 space-y-2 overflow-y-auto overflow-x-hidden custom-scrollbar">
+
         <p class="px-2 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap transition-opacity duration-300"
             x-show="sidebarOpen">
             Main Menu
@@ -63,6 +64,35 @@
                     x-show="sidebarOpen">
                     Akademik
                 </p>
+
+                <x-responsive-nav-link :href="route('tu.teachers.index')" :active="request()->routeIs('tu.teachers.*')"
+                    class="group flex items-center px-2 py-3 rounded-lg transition-all duration-200 border-none cursor-pointer
+                    {{ request()->routeIs('tu.teachers.*')
+                        ? 'text-blue-400'
+                        : 'text-slate-400 hover:text-white hover:translate-x-1' }}">
+
+                    <i
+                        class="fa-solid fa-chalkboard-user w-6 text-center text-lg transition-colors duration-200 
+                       {{ request()->routeIs('tu.teachers.*') ? 'text-blue-500' : 'group-hover:text-blue-400' }}"></i>
+
+                    <span class="ml-3 font-medium whitespace-nowrap transition-all duration-300" x-show="sidebarOpen">
+                        Data Guru
+                    </span>
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('tu.classrooms.index')" :active="request()->routeIs('tu.classrooms.*')"
+                    class="group flex items-center px-2 py-3 rounded-lg transition-all duration-200 border-none cursor-pointer
+                    {{ request()->routeIs('tu.classrooms.*') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:translate-x-1' }}">
+
+                    <i
+                        class="fa-solid fa-school w-6 text-center text-lg transition-colors duration-200 
+                       {{ request()->routeIs('tu.classrooms.*') ? 'text-blue-500' : 'group-hover:text-blue-400' }}"></i>
+
+                    <span class="ml-3 font-medium whitespace-nowrap transition-all duration-300" x-show="sidebarOpen">
+                        Data Kelas
+                    </span>
+                </x-responsive-nav-link>
+
                 <x-responsive-nav-link :href="route('dashboard')"
                     class="group flex items-center px-2 py-3 rounded-lg transition-all duration-200 border-none cursor-pointer text-slate-400 hover:text-white hover:translate-x-1">
 
@@ -82,6 +112,7 @@
                     x-show="sidebarOpen">
                     Menu Guru
                 </p>
+
                 <x-responsive-nav-link :href="route('dashboard')"
                     class="group flex items-center px-2 py-3 rounded-lg transition-all duration-200 border-none cursor-pointer text-slate-400 hover:text-white hover:translate-x-1">
 

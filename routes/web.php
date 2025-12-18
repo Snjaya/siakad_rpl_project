@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\TU\TeacherController;
+use App\Http\Controllers\TU\ClassroomController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -56,6 +58,26 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
     Route::get('/dashboard', function () {
         return view('tu.dashboard');
     })->name('tu.dashboard');
+
+    // Tambahkan Route ini:
+    Route::resource('teachers', TeacherController::class)->names([
+        'index' => 'tu.teachers.index',
+        'create' => 'tu.teachers.create',
+        'store' => 'tu.teachers.store',
+        'edit' => 'tu.teachers.edit',
+        'update' => 'tu.teachers.update',
+        'destroy' => 'tu.teachers.destroy',
+    ]);
+
+    // Route Resource Data Kelas (D.2 / D.3 Penunjang)
+    Route::resource('classrooms', ClassroomController::class)->names([
+        'index' => 'tu.classrooms.index',
+        'create' => 'tu.classrooms.create',
+        'store' => 'tu.classrooms.store',
+        'edit' => 'tu.classrooms.edit',
+        'update' => 'tu.classrooms.update',
+        'destroy' => 'tu.classrooms.destroy',
+    ]);
 });
 
 // Aktor: Guru
