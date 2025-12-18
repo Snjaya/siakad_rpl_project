@@ -10,6 +10,7 @@ use Illuminate\Validation\Rules;
 
 class UserController extends Controller
 {
+    // Menampilkan daftar user
     public function index()
     {
         $users = User::latest()->get();
@@ -21,6 +22,7 @@ class UserController extends Controller
         return view('admin.users.create');
     }
 
+    // Tambah Akun -> Warna Hijau (success)
     public function store(Request $request)
     {
         $request->validate([
@@ -37,7 +39,7 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('admin.users.index')->with('success', 'Akun berhasil dibuat.');
+        return redirect()->route('admin.users.index')->with('success', 'Akun baru berhasil ditambahkan!');
     }
 
     public function edit(User $user)
@@ -45,36 +47,37 @@ class UserController extends Controller
         return view('admin.users.edit', compact('user'));
     }
 
+    // Edit Akun -> Warna Biru (info)
     public function update(Request $request, User $user)
     {
         $request->validate([
-            'username' => ['required', 'string', 'max:255', 'unique:users,username,'.$user->id],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'username' => ['required', 'string', 'max:255', 'unique:users,username,' . $user->id],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'role' => ['required', 'in:Admin,TU,Guru,Siswa'],
         ]);
 
         $user->update($request->only('username', 'email', 'role'));
 
-        return redirect()->route('admin.users.index')->with('success', 'Data akun berhasil diperbarui.');
+        return redirect()->route('admin.users.index')->with('info', 'Data akun berhasil diperbarui.');
     }
 
+    // Hapus Akun -> Warna Merah (error)
     public function destroy(User $user)
     {
-        // Mencegah admin menghapus dirinya sendiri
         if (auth()->id() === $user->id) {
-            return redirect()->back()->with('error', 'Anda tidak bisa menghapus akun sendiri.');
+            return redirect()->back()->with('warning', 'Anda tidak bisa menghapus akun sendiri.');
         }
 
         $user->delete();
-        return redirect()->route('admin.users.index')->with('success', 'Akun berhasil dihapus.');
+        return redirect()->route('admin.users.index')->with('error', 'Akun telah dihapus dari sistem.');
     }
 
-    // Fitur Reset Password (A.4)
     public function resetPassword(User $user)
     {
         return view('admin.users.reset', compact('user'));
     }
 
+    // Reset Password -> Warna Kuning (warning)
     public function updatePassword(Request $request, User $user)
     {
         $request->validate([
@@ -85,6 +88,6 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('admin.users.index')->with('success', 'Password user ' . $user->username . ' berhasil direset.');
+        return redirect()->route('admin.users.index')->with('warning', 'Password user ' . $user->username . ' berhasil direset.');
     }
 }

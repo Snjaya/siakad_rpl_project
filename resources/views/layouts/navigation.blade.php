@@ -1,164 +1,120 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
-                </div>
+<aside :class="sidebarOpen ? 'w-64' : 'w-20'"
+    class="flex flex-col h-full bg-slate-900 border-r border-slate-800 transition-all duration-300 ease-in-out z-40 overflow-hidden flex-shrink-0">
 
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-
-                    {{-- Menu Khusus ADMIN --}}
-                    @if (Auth::user()->role == 'Admin')
-                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                            {{ __('Kelola User (A.5)') }}
-                        </x-nav-link>
-                        {{-- Menu Laporan Nilai Admin (A.2, A.3) - Link sementara ke dashboard --}}
-                        <x-nav-link :href="route('dashboard')" :active="false">
-                            {{ __('Laporan Nilai') }}
-                        </x-nav-link>
-                    @endif
-
-                    {{-- Menu Khusus TATA USAHA (TU) --}}
-                    @if (Auth::user()->role == 'TU')
-                        <x-nav-link :href="route('dashboard')" :active="false">
-                            {{ __('Data Siswa (D.2)') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('dashboard')" :active="false">
-                            {{ __('Data Guru (D.3)') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('dashboard')" :active="false">
-                            {{ __('Jadwal Pelajaran (D.7)') }}
-                        </x-nav-link>
-                    @endif
-
-                    {{-- Menu Khusus GURU --}}
-                    @if (Auth::user()->role == 'Guru')
-                        <x-nav-link :href="route('dashboard')" :active="false">
-                            {{ __('Input Nilai (B.6)') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('dashboard')" :active="false">
-                            {{ __('Jadwal Mengajar (B.5)') }}
-                        </x-nav-link>
-                    @endif
-
-                    {{-- Menu Khusus SISWA --}}
-                    @if (Auth::user()->role == 'Siswa')
-                        <x-nav-link :href="route('dashboard')" :active="false">
-                            {{ __('Lihat Nilai (C.4)') }}
-                        </x-nav-link>
-                        <x-nav-link :href="route('dashboard')" :active="false">
-                            {{ __('Jadwal Pelajaran (C.3)') }}
-                        </x-nav-link>
-                    @endif
-                </div>
+    <div class="flex items-center h-20 px-6 bg-slate-950 border-b border-slate-800 flex-shrink-0">
+        <a href="{{ route('dashboard') }}" class="flex items-center gap-3 w-full overflow-hidden">
+            <div class="flex-shrink-0 p-2 bg-blue-600 rounded-lg shadow-lg shadow-blue-500/30">
+                <x-application-logo class="w-6 h-6 fill-current text-white" />
             </div>
-
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button
-                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            {{-- Menggunakan username sesuai model User --}}
-                            <div>{{ Auth::user()->username }} ({{ Auth::user()->role }})</div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
-            </div>
-
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open"
-                    class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{ 'hidden': open, 'inline-flex': !open }" class="inline-flex"
-                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{ 'hidden': !open, 'inline-flex': open }" class="hidden" stroke-linecap="round"
-                            stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div>
+            <span class="text-lg font-bold text-white tracking-wide whitespace-nowrap transition-opacity duration-300"
+                x-show="sidebarOpen" x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
+                SIAKAD
+            </span>
+        </a>
     </div>
 
-    <div :class="{ 'block': open, 'hidden': !open }" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
+    <div class="flex-1 px-4 py-6 space-y-2 overflow-y-auto overflow-x-hidden custom-scrollbar">
+        <p class="px-2 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap transition-opacity duration-300"
+            x-show="sidebarOpen">
+            Main Menu
+        </p>
 
-            {{-- Responsive Links Berdasarkan Role --}}
-            @if (Auth::user()->role == 'Admin')
-                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
-                    {{ __('Kelola User') }}
+        <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')"
+            class="group flex items-center px-2 py-3 rounded-lg transition-all duration-200 border-none
+            {{ request()->routeIs('dashboard') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:translate-x-1' }}">
+
+            <i
+                class="fa-solid fa-house w-6 text-center text-lg transition-colors duration-200 
+               {{ request()->routeIs('dashboard') ? 'text-blue-500' : 'group-hover:text-blue-400' }}"></i>
+
+            <span class="ml-3 font-medium whitespace-nowrap transition-all duration-300" x-show="sidebarOpen">
+                Dashboard
+            </span>
+        </x-responsive-nav-link>
+
+        @if (Auth::user()->role == 'Admin')
+            <div class="mt-6">
+                <p class="px-2 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap transition-opacity duration-300"
+                    x-show="sidebarOpen">
+                    Administrator
+                </p>
+
+                <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')"
+                    class="group flex items-center px-2 py-3 rounded-lg transition-all duration-200 border-none cursor-pointer
+                    {{ request()->routeIs('admin.users.*')
+                        ? 'text-blue-400'
+                        : 'text-slate-400 hover:text-white hover:translate-x-1' }}">
+
+                    <i
+                        class="fa-solid fa-users-gear w-6 text-center text-lg transition-colors duration-200
+                       {{ request()->routeIs('admin.users.*') ? 'text-blue-500' : 'group-hover:text-blue-400' }}"></i>
+
+                    <span class="ml-3 font-medium whitespace-nowrap transition-all duration-300" x-show="sidebarOpen">
+                        Kelola Akun
+                    </span>
                 </x-responsive-nav-link>
-            @endif
-
-            @if (Auth::user()->role == 'TU')
-                <x-responsive-nav-link :href="route('dashboard')">{{ __('Data Siswa') }}</x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('dashboard')">{{ __('Data Guru') }}</x-responsive-nav-link>
-            @endif
-
-            @if (Auth::user()->role == 'Guru')
-                <x-responsive-nav-link :href="route('dashboard')">{{ __('Input Nilai') }}</x-responsive-nav-link>
-            @endif
-
-            @if (Auth::user()->role == 'Siswa')
-                <x-responsive-nav-link :href="route('dashboard')">{{ __('Lihat Nilai') }}</x-responsive-nav-link>
-            @endif
-        </div>
-
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->username }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
             </div>
+        @endif
 
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
+        @if (Auth::user()->role == 'TU')
+            <div class="mt-6">
+                <p class="px-2 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap transition-opacity duration-300"
+                    x-show="sidebarOpen">
+                    Akademik
+                </p>
+                <x-responsive-nav-link :href="route('dashboard')"
+                    class="group flex items-center px-2 py-3 rounded-lg transition-all duration-200 border-none cursor-pointer text-slate-400 hover:text-white hover:translate-x-1">
+
+                    <i
+                        class="fa-solid fa-user-graduate w-6 text-center text-lg transition-colors duration-200 group-hover:text-blue-400"></i>
+
+                    <span class="ml-3 font-medium whitespace-nowrap transition-all duration-300" x-show="sidebarOpen">
+                        Data Siswa
+                    </span>
                 </x-responsive-nav-link>
-
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                        onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
             </div>
-        </div>
+        @endif
+
+        @if (Auth::user()->role == 'Guru')
+            <div class="mt-6">
+                <p class="px-2 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap transition-opacity duration-300"
+                    x-show="sidebarOpen">
+                    Menu Guru
+                </p>
+                <x-responsive-nav-link :href="route('dashboard')"
+                    class="group flex items-center px-2 py-3 rounded-lg transition-all duration-200 border-none cursor-pointer text-slate-400 hover:text-white hover:translate-x-1">
+
+                    <i
+                        class="fa-solid fa-pen-to-square w-6 text-center text-lg transition-colors duration-200 group-hover:text-blue-400"></i>
+
+                    <span class="ml-3 font-medium whitespace-nowrap transition-all duration-300" x-show="sidebarOpen">
+                        Input Nilai
+                    </span>
+                </x-responsive-nav-link>
+            </div>
+        @endif
     </div>
-</nav>
+
+    <div class="p-4 bg-slate-950 border-t border-slate-800 flex-shrink-0">
+        <div class="flex items-center gap-3 mb-4 overflow-hidden">
+            <div
+                class="flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white text-sm font-bold shadow-md">
+                {{ strtoupper(substr(Auth::user()->username, 0, 1)) }}
+            </div>
+            <div class="overflow-hidden transition-opacity duration-300" x-show="sidebarOpen">
+                <p class="text-sm font-semibold text-white truncate">{{ Auth::user()->username }}</p>
+                <p class="text-[10px] text-slate-500 uppercase tracking-wide">{{ Auth::user()->role }}</p>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit"
+                class="group flex items-center justify-center w-full py-2 text-sm font-medium text-slate-400 hover:text-red-400 bg-slate-900 hover:bg-slate-800 rounded-lg transition-all border border-slate-800 hover:border-red-500/30">
+                <i class="fa-solid fa-right-from-bracket transition-transform group-hover:-translate-x-1"></i>
+                <span class="ml-2 whitespace-nowrap transition-all duration-300" x-show="sidebarOpen">Keluar</span>
+            </button>
+        </form>
+    </div>
+</aside>

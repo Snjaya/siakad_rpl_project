@@ -14,6 +14,18 @@
                 </div>
             @endif
 
+            @if (session('info'))
+                <div class="mb-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative">
+                    {{ session('info') }}
+                </div>
+            @endif
+
+            @if (session('warning'))
+                <div class="mb-4 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative">
+                    {{ session('warning') }}
+                </div>
+            @endif
+
             @if (session('error'))
                 <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
                     {{ session('error') }}
@@ -28,14 +40,14 @@
             </div>
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
+                <div class="p-6 text-gray-900 text-center">
                     <table class="min-w-full border-collapse">
                         <thead>
-                            <tr class="bg-gray-100 text-left">
+                            <tr class="bg-gray-100">
                                 <th class="border p-3">Username</th>
                                 <th class="border p-3">Email</th>
                                 <th class="border p-3">Role</th>
-                                <th class="border p-3 text-center">Aksi</th>
+                                <th class="border p-3">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -43,36 +55,20 @@
                                 <tr class="hover:bg-gray-50">
                                     <td class="border p-3">{{ $user->username }}</td>
                                     <td class="border p-3">{{ $user->email }}</td>
+                                    <td class="border p-3">{{ $user->role }}</td>
                                     <td class="border p-3">
-                                        <span
-                                            class="px-2 py-1 rounded text-xs font-semibold 
-                                            {{ $user->role == 'Admin' ? 'bg-purple-100 text-purple-700' : '' }}
-                                            {{ $user->role == 'TU' ? 'bg-blue-100 text-blue-700' : '' }}
-                                            {{ $user->role == 'Guru' ? 'bg-green-100 text-green-700' : '' }}
-                                            {{ $user->role == 'Siswa' ? 'bg-yellow-100 text-yellow-700' : '' }}">
-                                            {{ $user->role }}
-                                        </span>
-                                    </td>
-                                    <td class="border p-3 text-center">
                                         <div class="flex justify-center space-x-2">
                                             <a href="{{ route('admin.users.edit', $user) }}"
-                                                class="text-blue-600 hover:text-blue-900 font-medium">Edit</a>
-
+                                                class="text-blue-600 hover:underline">Edit</a>
                                             <span class="text-gray-300">|</span>
-
                                             <a href="{{ route('admin.users.reset', $user) }}"
-                                                class="text-green-600 hover:text-green-900 font-medium">Reset</a>
-
+                                                class="text-yellow-600 hover:underline">Reset</a>
                                             <span class="text-gray-300">|</span>
-
                                             <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
                                                 class="inline">
                                                 @csrf @method('DELETE')
-                                                <button type="submit"
-                                                    class="text-red-600 hover:text-red-900 font-medium"
-                                                    onclick="return confirm('Yakin ingin hapus akun {{ $user->username }}?')">
-                                                    Hapus
-                                                </button>
+                                                <button type="submit" class="text-red-600 hover:underline"
+                                                    onclick="return confirm('Yakin hapus akun {{ $user->username }}?')">Hapus</button>
                                             </form>
                                         </div>
                                     </td>
