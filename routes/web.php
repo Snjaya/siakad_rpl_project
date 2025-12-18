@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\TU\StudentController;
 use App\Http\Controllers\TU\TeacherController;
 use App\Http\Controllers\TU\ClassroomController;
 
@@ -77,6 +78,16 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
         'edit' => 'tu.classrooms.edit',
         'update' => 'tu.classrooms.update',
         'destroy' => 'tu.classrooms.destroy',
+    ]);
+
+    // Route Resource Data Siswa (D.2)
+    Route::resource('students', StudentController::class)->names([
+        'index' => 'tu.students.index',
+        'create' => 'tu.students.create',
+        'store' => 'tu.students.store',
+        'edit' => 'tu.students.edit',
+        'update' => 'tu.students.update',
+        'destroy' => 'tu.students.destroy',
     ]);
 });
 

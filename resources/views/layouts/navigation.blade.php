@@ -93,11 +93,13 @@
                     </span>
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link :href="route('dashboard')"
-                    class="group flex items-center px-2 py-3 rounded-lg transition-all duration-200 border-none cursor-pointer text-slate-400 hover:text-white hover:translate-x-1">
+                <x-responsive-nav-link :href="route('tu.students.index')" :active="request()->routeIs('tu.students.*')"
+                    class="group flex items-center px-2 py-3 rounded-lg transition-all duration-200 border-none cursor-pointer
+                    {{ request()->routeIs('tu.students.*') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:translate-x-1' }}">
 
                     <i
-                        class="fa-solid fa-user-graduate w-6 text-center text-lg transition-colors duration-200 group-hover:text-blue-400"></i>
+                        class="fa-solid fa-user-graduate w-6 text-center text-lg transition-colors duration-200 
+                       {{ request()->routeIs('tu.students.*') ? 'text-blue-500' : 'group-hover:text-blue-400' }}"></i>
 
                     <span class="ml-3 font-medium whitespace-nowrap transition-all duration-300" x-show="sidebarOpen">
                         Data Siswa
