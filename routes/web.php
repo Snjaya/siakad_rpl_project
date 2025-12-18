@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -34,6 +35,20 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
+
+    // Fitur Kelola Akun User (A.5) 
+    Route::resource('users', UserController::class)->names([
+        'index' => 'admin.users.index',
+        'create' => 'admin.users.create',
+        'store' => 'admin.users.store',
+        'edit' => 'admin.users.edit',
+        'update' => 'admin.users.update',
+        'destroy' => 'admin.users.destroy',
+    ]);
+
+    // Fitur Reset Password (A.4) 
+    Route::get('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('admin.users.reset');
+    Route::patch('/users/{user}/reset-password', [UserController::class, 'updatePassword'])->name('admin.users.update-password');
 });
 
 // Aktor: Tata Usaha (TU)
