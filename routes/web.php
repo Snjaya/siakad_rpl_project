@@ -5,8 +5,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\TU\StudentController;
+use App\Http\Controllers\TU\SubjectController;
 use App\Http\Controllers\TU\TeacherController;
+use App\Http\Controllers\TU\ScheduleController;
 use App\Http\Controllers\TU\ClassroomController;
+use App\Http\Controllers\TU\AcademicYearController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -88,6 +91,22 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
         'edit' => 'tu.students.edit',
         'update' => 'tu.students.update',
         'destroy' => 'tu.students.destroy',
+    ]);
+
+    // Route Mata Pelajaran
+    Route::resource('subjects', SubjectController::class)->names('tu.subjects');
+
+    // Route Tahun Ajaran
+    Route::resource('academic-years', AcademicYearController::class)->names('tu.academic_years');
+    Route::patch('academic-years/{id}/active', [AcademicYearController::class, 'setActive'])->name('tu.academic_years.active');
+
+    Route::resource('schedules', ScheduleController::class)->names([
+        'index' => 'tu.schedules.index',
+        'create' => 'tu.schedules.create',
+        'store' => 'tu.schedules.store',
+        'edit' => 'tu.schedules.edit',
+        'update' => 'tu.schedules.update',
+        'destroy' => 'tu.schedules.destroy',
     ]);
 });
 

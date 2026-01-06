@@ -105,6 +105,39 @@
                         Data Siswa
                     </span>
                 </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('tu.subjects.index')" :active="request()->routeIs('tu.subjects.*')"
+                    class="group flex items-center px-2 py-3 rounded-lg transition-all duration-200 border-none cursor-pointer
+    {{ request()->routeIs('tu.subjects.*') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:translate-x-1' }}">
+                    <i
+                        class="fa-solid fa-book w-6 text-center text-lg transition-colors duration-200 
+       {{ request()->routeIs('tu.subjects.*') ? 'text-blue-500' : 'group-hover:text-blue-400' }}"></i>
+                    <span class="ml-3 font-medium whitespace-nowrap transition-all duration-300" x-show="sidebarOpen">
+                        Mata Pelajaran
+                    </span>
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('tu.academic_years.index')" :active="request()->routeIs('tu.academic_years.*')"
+                    class="group flex items-center px-2 py-3 rounded-lg transition-all duration-200 border-none cursor-pointer
+    {{ request()->routeIs('tu.academic_years.*') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:translate-x-1' }}">
+                    <i
+                        class="fa-regular fa-calendar-check w-6 text-center text-lg transition-colors duration-200 
+       {{ request()->routeIs('tu.academic_years.*') ? 'text-blue-500' : 'group-hover:text-blue-400' }}"></i>
+                    <span class="ml-3 font-medium whitespace-nowrap transition-all duration-300" x-show="sidebarOpen">
+                        Tahun Ajaran
+                    </span>
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('tu.schedules.index')" :active="request()->routeIs('tu.schedules.*')"
+                    class="group flex items-center px-2 py-3 rounded-lg transition-all duration-200 border-none cursor-pointer
+    {{ request()->routeIs('tu.schedules.*') ? 'text-blue-400' : 'text-slate-400 hover:text-white hover:translate-x-1' }}">
+                    <i
+                        class="fa-solid fa-calendar-days w-6 text-center text-lg transition-colors duration-200 
+       {{ request()->routeIs('tu.schedules.*') ? 'text-blue-500' : 'group-hover:text-blue-400' }}"></i>
+                    <span class="ml-3 font-medium whitespace-nowrap transition-all duration-300" x-show="sidebarOpen">
+                        Jadwal Pelajaran
+                    </span>
+                </x-responsive-nav-link>
             </div>
         @endif
 
