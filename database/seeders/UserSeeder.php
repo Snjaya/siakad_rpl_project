@@ -18,32 +18,32 @@ class UserSeeder extends Seeder
             [
                 'username' => 'admin_siakad',
                 'email' => 'admin@example.com',
-                'password' => Hash::make(' password'),
-                'role' => 'Admin', // Pengontrol Sistem & Keamanan 
+                'password' => Hash::make('password123'), // PERBAIKAN: Gunakan password123
+                'role' => 'Admin',
             ],
             [
                 'username' => 'tu_siakad',
                 'email' => 'tu@example.com',
-                'password' => Hash::make(' password'),
-                'role' => 'TU', // Administrator Data Akademik 
+                'password' => Hash::make('password123'), // PERBAIKAN: Gunakan password123
+                'role' => 'TU',
             ],
             [
                 'username' => 'guru_siakad',
                 'email' => 'guru@example.com',
-                'password' => Hash::make(' password'),
-                'role' => 'Guru', // Pengelola Nilai
+                'password' => Hash::make('password123'), // PERBAIKAN: Gunakan password123
+                'role' => 'Guru',
             ],
             [
                 'username' => 'siswa_siakad',
                 'email' => 'siswa@example.com',
-                'password' => Hash::make(' password'),
-                'role' => 'Siswa', // Pengguna Informasi 
+                'password' => Hash::make('password123'), // PERBAIKAN: Gunakan password123
+                'role' => 'Siswa',
             ],
         ];
 
         foreach ($users as $user) {
             User::updateOrCreate(
-                ['username' => $user['username']], // Unik berdasarkan username
+                ['username' => $user['username']],
                 $user
             );
         }

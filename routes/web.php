@@ -4,11 +4,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Guru\GradeController;
 use App\Http\Controllers\TU\StudentController;
 use App\Http\Controllers\TU\SubjectController;
 use App\Http\Controllers\TU\TeacherController;
 use App\Http\Controllers\TU\ScheduleController;
 use App\Http\Controllers\TU\ClassroomController;
+use App\Http\Controllers\Guru\DashboardController;
 use App\Http\Controllers\TU\AcademicYearController;
 
 Route::get('/', function () {
@@ -112,9 +114,16 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
 
 // Aktor: Guru
 Route::middleware(['auth', 'role:Guru'])->prefix('guru')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('guru.dashboard');
-    })->name('guru.dashboard');
+    // Dashboard Guru (Sekarang pakai Controller)
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('guru.dashboard');
+
+    Route::middleware(['auth', 'role:Guru'])->prefix('guru')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('guru.dashboard');
+
+        // Route Input Nilai
+        Route::get('/grades/{schedule}/input', [GradeController::class, 'create'])->name('guru.grades.create');
+        Route::post('/grades/{schedule}/store', [GradeController::class, 'store'])->name('guru.grades.store');
+    });
 });
 
 // Aktor: Siswa

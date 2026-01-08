@@ -12,17 +12,25 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('grades', function (Blueprint $table) {
-            $table->id('id_nilai'); // [cite: 83]
-            $table->string('nis'); // [cite: 83]
-            $table->unsignedBigInteger('id_mapel'); // [cite: 83]
-            $table->string('nip_teacher'); // [cite: 83]
-            $table->unsignedBigInteger('id_tahun'); // [cite: 83]
-            $table->integer('nilai_angka'); // [cite: 83]
-            $table->foreign('nis')->references('nis')->on('students');
-            $table->foreign('id_mapel')->references('id_mapel')->on('subjects');
-            $table->foreign('nip_teacher')->references('nip')->on('teachers');
-            $table->foreign('id_tahun')->references('id_tahun')->on('academic_years');
+            $table->id('id_nilai');
+
+            // Menghubungkan nilai ke Jadwal (agar tahu Mapel, Guru, dan Kelasnya siapa)
+            $table->unsignedBigInteger('id_jadwal');
+
+            // Menghubungkan ke Siswa
+            $table->string('nis_siswa'); // Pastikan tipe data sama dengan kolom 'nis' di tabel students
+
+            // Kolom Rincian Nilai
+            $table->double('tugas')->default(0);
+            $table->double('uts')->default(0);
+            $table->double('uas')->default(0);
+            $table->double('nilai_akhir')->default(0);
+
             $table->timestamps();
+
+            // Foreign Keys
+            $table->foreign('id_jadwal')->references('id_jadwal')->on('schedules')->onDelete('cascade');
+            $table->foreign('nis_siswa')->references('nis')->on('students')->onDelete('cascade');
         });
     }
 
