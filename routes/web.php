@@ -10,12 +10,19 @@ use App\Http\Controllers\TU\SubjectController;
 use App\Http\Controllers\TU\TeacherController;
 use App\Http\Controllers\TU\ScheduleController;
 use App\Http\Controllers\TU\ClassroomController;
-use App\Http\Controllers\Guru\DashboardController;
 use App\Http\Controllers\TU\AcademicYearController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+use App\Http\Controllers\Guru\DashboardController as GuruDashboardController;
+use App\Http\Controllers\Siswa\DashboardController as SiswaDashboardController;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
+// 1. Redirect root URL (/) langsung ke halaman Login
+Route::redirect('/', '/login');
 
 /**
  * Logika Pengalihan Dashboard Berdasarkan Role
@@ -29,7 +36,7 @@ Route::get('/dashboard', function () {
         'TU'    => redirect()->route('tu.dashboard'),
         'Guru'  => redirect()->route('guru.dashboard'),
         'Siswa' => redirect()->route('siswa.dashboard'),
-        default => redirect('/'),
+        default => redirect('/login'),
     };
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -65,7 +72,7 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
         return view('tu.dashboard');
     })->name('tu.dashboard');
 
-    // Tambahkan Route ini:
+    // Route Resource Data Guru (D.1)
     Route::resource('teachers', TeacherController::class)->names([
         'index' => 'tu.teachers.index',
         'create' => 'tu.teachers.create',
@@ -102,6 +109,7 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
     Route::resource('academic-years', AcademicYearController::class)->names('tu.academic_years');
     Route::patch('academic-years/{id}/active', [AcademicYearController::class, 'setActive'])->name('tu.academic_years.active');
 
+    // Route Jadwal Pelajaran
     Route::resource('schedules', ScheduleController::class)->names([
         'index' => 'tu.schedules.index',
         'create' => 'tu.schedules.create',
@@ -114,28 +122,22 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
 
 // Aktor: Guru
 Route::middleware(['auth', 'role:Guru'])->prefix('guru')->group(function () {
-    // Dashboard Guru (Sekarang pakai Controller)
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('guru.dashboard');
+    // Dashboard Guru (Gunakan Alias GuruDashboardController)
+    Route::get('/dashboard', [GuruDashboardController::class, 'index'])->name('guru.dashboard');
 
-    Route::middleware(['auth', 'role:Guru'])->prefix('guru')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('guru.dashboard');
-
-        // Route Input Nilai
-        Route::get('/grades/{schedule}/input', [GradeController::class, 'create'])->name('guru.grades.create');
-        Route::post('/grades/{schedule}/store', [GradeController::class, 'store'])->name('guru.grades.store');
-    });
+    // Route Input Nilai
+    Route::get('/grades/{schedule}/input', [GradeController::class, 'create'])->name('guru.grades.create');
+    Route::post('/grades/{schedule}/store', [GradeController::class, 'store'])->name('guru.grades.store');
 });
 
 // Aktor: Siswa
 Route::middleware(['auth', 'role:Siswa'])->prefix('siswa')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('siswa.dashboard');
-    })->name('siswa.dashboard');
+    // Dashboard Siswa (Gunakan Alias SiswaDashboardController)
+    Route::get('/dashboard', [SiswaDashboardController::class, 'index'])->name('siswa.dashboard');
 });
 
 /**
- * Fungsionalitas Profil (Wajib untuk mengatasi RouteNotFoundException)
- * Digunakan oleh navigasi Breeze untuk menu 'Profile'.
+ * Fungsionalitas Profil
  */
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
