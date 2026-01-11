@@ -11,9 +11,31 @@ use Illuminate\Validation\Rules;
 class UserController extends Controller
 {
     // Menampilkan daftar user
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::latest()->get();
+        // Ambil input pencarian dan filter
+        $search = $request->input('search');
+        $role = $request->input('role');
+
+        // Query Dasar
+        $query = User::query();
+
+        // 1. Logika Pencarian (Search)
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('username', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        // 2. Logika Filter Role
+        if ($role) {
+            $query->where('role', $role);
+        }
+
+        // Urutkan data terbaru di atas
+        $users = $query->latest()->get();
+
         return view('admin.users.index', compact('users'));
     }
 

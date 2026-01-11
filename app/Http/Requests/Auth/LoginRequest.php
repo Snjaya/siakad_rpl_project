@@ -27,29 +27,26 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'login' => ['required', 'string'], // Kita ganti 'username'/'email' menjadi 'login' agar netral
+            'username' => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
 
-    /**
-     * Attempt to authenticate the request's credentials.
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
 
-        // Tentukan apakah input adalah email atau username
-        $loginType = filter_var($this->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        $input = $this->input('username');
 
-        // Coba login dengan kredensial yang sesuai
-        if (! Auth::attempt([$loginType => $this->login, 'password' => $this->password], $this->boolean('remember'))) {
+        // Cek apakah formatnya email?
+        $loginType = filter_var($input, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        // Coba Login
+        if (! Auth::attempt([$loginType => $input, 'password' => $this->input('password')], $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'login' => trans('auth.failed'),
+                'username' => trans('auth.failed'),
             ]);
         }
 
