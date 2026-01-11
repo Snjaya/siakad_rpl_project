@@ -50,7 +50,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                    <a href="#"
+                    <a href="{{ route('siswa.schedules.index') }}"
                         class="group bg-white overflow-hidden shadow-sm rounded-xl border hover:border-blue-400 transition-all duration-300 hover:shadow-md">
                         <div class="p-6 flex items-center justify-between">
                             <div>
@@ -65,7 +65,7 @@
                         </div>
                     </a>
 
-                    <a href="#"
+                    <a href="{{ route('siswa.grades.index') }}"
                         class="group bg-white overflow-hidden shadow-sm rounded-xl border hover:border-green-400 transition-all duration-300 hover:shadow-md">
                         <div class="p-6 flex items-center justify-between">
                             <div>

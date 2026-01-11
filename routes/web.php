@@ -3,8 +3,11 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
+
+// --- Imports Controller Admin ---
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Guru\GradeController;
+
+// --- Imports Controller TU ---
 use App\Http\Controllers\TU\StudentController;
 use App\Http\Controllers\TU\SubjectController;
 use App\Http\Controllers\TU\TeacherController;
@@ -12,8 +15,14 @@ use App\Http\Controllers\TU\ScheduleController;
 use App\Http\Controllers\TU\ClassroomController;
 use App\Http\Controllers\TU\AcademicYearController;
 
+// --- Imports Controller Guru ---
+use App\Http\Controllers\Guru\GradeController;
 use App\Http\Controllers\Guru\DashboardController as GuruDashboardController;
+
+// --- Imports Controller Siswa ---
 use App\Http\Controllers\Siswa\DashboardController as SiswaDashboardController;
+use App\Http\Controllers\Siswa\ScheduleController as SiswaScheduleController;
+use App\Http\Controllers\Siswa\GradeController as SiswaGradeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,7 +60,7 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->group(function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
 
-    // Fitur Kelola Akun User (A.5) 
+    // Fitur Kelola Akun User
     Route::resource('users', UserController::class)->names([
         'index' => 'admin.users.index',
         'create' => 'admin.users.create',
@@ -61,7 +70,7 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->group(function () {
         'destroy' => 'admin.users.destroy',
     ]);
 
-    // Fitur Reset Password (A.4) 
+    // Fitur Reset Password
     Route::get('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('admin.users.reset');
     Route::patch('/users/{user}/reset-password', [UserController::class, 'updatePassword'])->name('admin.users.update-password');
 });
@@ -72,7 +81,7 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
         return view('tu.dashboard');
     })->name('tu.dashboard');
 
-    // Route Resource Data Guru (D.1)
+    // Data Guru
     Route::resource('teachers', TeacherController::class)->names([
         'index' => 'tu.teachers.index',
         'create' => 'tu.teachers.create',
@@ -82,7 +91,7 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
         'destroy' => 'tu.teachers.destroy',
     ]);
 
-    // Route Resource Data Kelas (D.2 / D.3 Penunjang)
+    // Data Kelas
     Route::resource('classrooms', ClassroomController::class)->names([
         'index' => 'tu.classrooms.index',
         'create' => 'tu.classrooms.create',
@@ -92,7 +101,7 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
         'destroy' => 'tu.classrooms.destroy',
     ]);
 
-    // Route Resource Data Siswa (D.2)
+    // Data Siswa
     Route::resource('students', StudentController::class)->names([
         'index' => 'tu.students.index',
         'create' => 'tu.students.create',
@@ -102,14 +111,14 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
         'destroy' => 'tu.students.destroy',
     ]);
 
-    // Route Mata Pelajaran
+    // Mata Pelajaran
     Route::resource('subjects', SubjectController::class)->names('tu.subjects');
 
-    // Route Tahun Ajaran
+    // Tahun Ajaran
     Route::resource('academic-years', AcademicYearController::class)->names('tu.academic_years');
     Route::patch('academic-years/{id}/active', [AcademicYearController::class, 'setActive'])->name('tu.academic_years.active');
 
-    // Route Jadwal Pelajaran
+    // Jadwal Pelajaran
     Route::resource('schedules', ScheduleController::class)->names([
         'index' => 'tu.schedules.index',
         'create' => 'tu.schedules.create',
@@ -122,7 +131,7 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
 
 // Aktor: Guru
 Route::middleware(['auth', 'role:Guru'])->prefix('guru')->group(function () {
-    // Dashboard Guru (Gunakan Alias GuruDashboardController)
+    // Dashboard Guru
     Route::get('/dashboard', [GuruDashboardController::class, 'index'])->name('guru.dashboard');
 
     // Route Input Nilai
@@ -132,8 +141,14 @@ Route::middleware(['auth', 'role:Guru'])->prefix('guru')->group(function () {
 
 // Aktor: Siswa
 Route::middleware(['auth', 'role:Siswa'])->prefix('siswa')->group(function () {
-    // Dashboard Siswa (Gunakan Alias SiswaDashboardController)
+    // Dashboard Siswa
     Route::get('/dashboard', [SiswaDashboardController::class, 'index'])->name('siswa.dashboard');
+
+    // Route Jadwal Siswa
+    Route::get('/my-schedule', [SiswaScheduleController::class, 'index'])->name('siswa.schedules.index');
+
+    // Route Nilai Siswa
+    Route::get('/my-grades', [SiswaGradeController::class, 'index'])->name('siswa.grades.index');
 });
 
 /**
