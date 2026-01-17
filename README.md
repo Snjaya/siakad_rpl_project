@@ -1,59 +1,55 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🏫 SIAKAD SMK Marhas
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem Informasi Akademik (SIAKAD) yang dirancang khusus untuk kebutuhan digitalisasi **SMK Marhas**. Aplikasi ini membantu pengelolaan data akademik mulai dari data master, penjadwalan, hingga pelaporan nilai siswa secara real-time.
 
-## About Laravel
+Dibangun menggunakan teknologi terbaru **Laravel 12** dan **PHP 8.4** dengan antarmuka modern **Emerald Green** yang responsif (Mobile-First Design).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 👨‍💼 Administrator & Tata Usaha (TU)
+* **Dashboard Statistik:** Ringkasan jumlah siswa, guru, dan kelas.
+* **Manajemen User:** Kelola akun dengan Role (Admin, TU, Guru, Siswa).
+* **Data Master:** CRUD Guru, Siswa, Kelas, Mata Pelajaran, dan Tahun Ajaran.
+* **Penjadwalan:** Atur jadwal pelajaran anti-bentrok.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 👨‍🏫 Guru
+* **Jadwal Mengajar:** Melihat jadwal harian dan mingguan di dashboard.
+* **Input Nilai:** Input nilai Tugas, UTS, dan UAS per kelas.
+* **Kalkulasi Otomatis:** Nilai akhir dihitung otomatis (30% Tugas + 30% UTS + 40% UAS).
 
-## Learning Laravel
+### 👨‍🎓 Siswa
+* **Jadwal Pelajaran:** Melihat jadwal pelajaran aktif hari ini dan minggu ini.
+* **Kartu Hasil Studi (KHS):** Melihat transkrip nilai dan grade (A/B/C/D/E) secara real-time.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🛠️ Teknologi yang Digunakan
+* **Backend:** Laravel 12 (PHP 8.4)
+* **Database:** MySQL
+* **Frontend:** Blade Templating, Tailwind CSS
+* **Icons:** FontAwesome 6
+* **Fitur Lain:** Authentication, Pagination, Search, Seeding Data Dummy.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 💻 Cara Install & Menjalankan (Localhost)
 
-## Laravel Sponsors
+Ikuti langkah ini untuk menjalankan project di laptop Anda:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 1. Persyaratan Sistem
+* PHP >= 8.4
+* Composer
+* Node.js & NPM
+* MySQL
 
-### Premium Partners
+### 2. Instalasi
+```bash
+# Clone repository
+git clone [https://github.com/username-kamu/siakad-smk-marhas.git](https://github.com/username-kamu/siakad-smk-marhas.git)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+# Masuk ke folder project
+cd siakad-smk-marhas
 
-## Contributing
+# Install dependencies
+composer install
+npm install
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Setup Environment
+cp .env.example .env
+php artisan key:generate
