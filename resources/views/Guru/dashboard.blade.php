@@ -1,94 +1,94 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-bold text-xl text-gray-800 leading-tight">
+            <i class="fa-solid fa-chalkboard-user mr-2 text-emerald-600"></i>
             {{ __('Dashboard Guru') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-12 bg-slate-50 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            <div class="bg-blue-600 rounded-lg shadow-lg p-6 mb-6 text-white flex justify-between items-center">
-                <div>
-                    <h3 class="text-2xl font-bold">Selamat Datang, {{ $teacherName }}! 👋</h3>
-                    <p class="mt-2 text-blue-100">Berikut adalah jadwal mengajar Anda minggu ini.</p>
-                </div>
-                <div class="hidden md:block text-4xl opacity-50">
-                    <i class="fa-solid fa-chalkboard-user"></i>
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-xl mb-6 border-l-4 border-emerald-500">
+                <div class="p-6 text-gray-900 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800">Selamat Datang, {{ $teacherName }}! 👋</h3>
+                        <p class="text-sm text-gray-500 mt-1">Berikut adalah jadwal mengajar Anda semester ini.</p>
+                    </div>
+                    <div class="hidden md:block text-emerald-100">
+                        <i class="fa-solid fa-person-chalkboard text-6xl"></i>
+                    </div>
                 </div>
             </div>
 
-            @if (isset($error))
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                    {{ $error }}
+            <h3 class="font-bold text-lg text-gray-700 mb-4 px-2 flex items-center">
+                <i class="fa-regular fa-calendar-check mr-2 text-emerald-600"></i>
+                Jadwal Mengajar
+            </h3>
+
+            @if ($schedules->count() > 0)
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach ($schedules as $schedule)
+                        <div
+                            class="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition duration-200 overflow-hidden group">
+                            <div class="bg-slate-50 p-4 border-b border-gray-100 flex justify-between items-center">
+                                @php
+                                    $hariColor = match ($schedule->hari) {
+                                        'Senin' => 'bg-red-100 text-red-700',
+                                        'Selasa' => 'bg-orange-100 text-orange-700',
+                                        'Rabu' => 'bg-yellow-100 text-yellow-700',
+                                        'Kamis' => 'bg-green-100 text-green-700',
+                                        'Jumat' => 'bg-blue-100 text-blue-700',
+                                        'Sabtu' => 'bg-purple-100 text-purple-700',
+                                        default => 'bg-gray-100 text-gray-700',
+                                    };
+                                @endphp
+                                <span class="px-3 py-1 rounded-full text-xs font-bold {{ $hariColor }}">
+                                    {{ $schedule->hari }}
+                                </span>
+                                <span class="text-sm font-mono text-gray-500 font-semibold">
+                                    <i class="fa-regular fa-clock mr-1"></i>
+                                    {{ \Carbon\Carbon::parse($schedule->jam_mulai)->format('H:i') }} -
+                                    {{ \Carbon\Carbon::parse($schedule->jam_selesai)->format('H:i') }}
+                                </span>
+                            </div>
+
+                            <div class="p-5">
+                                <h4
+                                    class="font-bold text-gray-800 text-lg mb-1 group-hover:text-emerald-600 transition">
+                                    {{-- SAFE GUARD: Pakai tanda ?? agar tidak error jika mapel dihapus --}}
+                                    {{ $schedule->subject->nama_mapel ?? 'Mapel Dihapus' }}
+                                </h4>
+
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-0.5 rounded">
+                                        {{-- PERBAIKAN UTAMA DI SINI (Line 72-74) --}}
+                                        {{ $schedule->kelas->nama_kelas ?? 'Kelas Tidak Ditemukan' }}
+                                    </span>
+                                    <span class="text-xs text-gray-400">
+                                        {{ $schedule->kelas->jurusan ?? '-' }}
+                                    </span>
+                                </div>
+
+                                <a href="{{ route('guru.grades.create', $schedule->id) }}"
+                                    class="block w-full text-center py-2.5 rounded-lg bg-emerald-600 text-white font-semibold text-sm hover:bg-emerald-700 transition shadow-md hover:shadow-lg transform active:scale-95">
+                                    <i class="fa-solid fa-pen-to-square mr-1"></i> Input Nilai
+                                </a>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="bg-white rounded-xl shadow-sm p-12 text-center border border-dashed border-gray-300">
+                    <div class="text-gray-300 mb-4">
+                        <i class="fa-solid fa-mug-hot text-6xl"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900">Tidak ada jadwal mengajar</h3>
+                    <p class="text-gray-500 text-sm mt-1">Anda belum memiliki jadwal kelas di semester ini. Hubungi TU.
+                    </p>
                 </div>
             @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h4 class="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">
-                        <i class="fa-solid fa-calendar-days mr-2"></i>Jadwal Mengajar
-                    </h4>
-
-                    @if ($schedules->isEmpty())
-                        <div class="text-center py-10 text-gray-500">
-                            <i class="fa-regular fa-calendar-xmark text-4xl mb-2"></i>
-                            <p>Anda belum memiliki jadwal mengajar saat ini.</p>
-                        </div>
-                    @else
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-gray-200">
-                                <thead class="bg-slate-50">
-                                    <tr>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                            Hari</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                            Jam</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                            Kelas</th>
-                                        <th
-                                            class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                            Mata Pelajaran</th>
-                                        <th
-                                            class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                            Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="bg-white divide-y divide-gray-200 text-sm">
-                                    @foreach ($schedules as $s)
-                                        <tr class="hover:bg-slate-50 transition">
-                                            <td class="px-6 py-4 whitespace-nowrap font-bold text-gray-800">
-                                                {{ $s->hari }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-blue-600 font-medium">
-                                                {{ substr($s->jam_mulai, 0, 5) }} - {{ substr($s->jam_selesai, 0, 5) }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap">
-                                                <span
-                                                    class="px-3 py-1 rounded-full bg-purple-100 text-purple-800 font-semibold text-xs">
-                                                    {{ $s->classroom->nama_kelas }}
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap font-medium">
-                                                {{ $s->subject->nama_mapel }}
-                                            </td>
-                                            <td class="px-6 py-4 whitespace-nowrap text-center">
-                                                <a href="{{ route('guru.grades.create', $s->id_jadwal) }}"
-                                                    class="inline-flex items-center px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 transition shadow-sm">
-                                                    <i class="fa-solid fa-pen-to-square mr-1.5"></i> Input Nilai
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    @endif
-                </div>
-            </div>
         </div>
     </div>
 </x-app-layout>

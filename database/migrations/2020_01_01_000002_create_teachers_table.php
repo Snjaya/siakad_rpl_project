@@ -11,15 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('students', function (Blueprint $table) {
+        Schema::create('teachers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_user')->constrained('users')->onDelete('cascade');
-
-            // Pastikan kolom kelas ada (sesuai seeder sebelumnya)
-            $table->foreignId('id_kelas')->constrained('classes')->onDelete('cascade');
-
-            $table->string('nis')->unique();
-            $table->string('nama_siswa');
+            $table->string('nip')->unique();
+            $table->string('nama_guru');
             $table->string('email')->nullable();
             $table->string('no_hp')->nullable();
 
@@ -39,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('students');
+        Schema::dropIfExists('gurus');
     }
 };

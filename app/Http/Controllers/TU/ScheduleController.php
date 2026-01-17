@@ -11,90 +11,96 @@ use Illuminate\Http\Request;
 
 class ScheduleController extends Controller
 {
-    public function index(Request $request)
+    /**
+     * Tampilkan Daftar Jadwal
+     */
+    public function index()
     {
-        $query = Schedule::with(['classroom', 'subject', 'teacher'])
-            ->orderBy('hari', 'desc')
-            ->orderBy('jam_mulai', 'asc');
+        // 1. Ambil Data Jadwal
+        $schedules = Schedule::with(['kelas', 'subject', 'teacher'])
+            ->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
+            ->orderBy('jam_mulai', 'asc')
+            ->paginate(10);
 
-        if ($request->has('kelas') && $request->kelas != '') {
-            $query->where('id_kelas', $request->kelas);
-        }
-
-        $schedules = $query->get();
+        // 2. Ambil Data Kelas (INI YANG KURANG SEBELUMNYA)
         $classrooms = Classroom::orderBy('nama_kelas')->get();
 
+        // 3. Kirim $schedules DAN $classrooms ke View
         return view('tu.schedules.index', compact('schedules', 'classrooms'));
     }
 
+    /**
+     * Form Tambah
+     */
     public function create()
     {
+        // Ambil data pendukung untuk dropdown
         $classrooms = Classroom::orderBy('nama_kelas')->get();
-        $subjects = Subject::orderBy('nama_mapel')->get();
-        $teachers = Teacher::orderBy('nama_guru')->get();
+        $subjects   = Subject::orderBy('nama_mapel')->get();
+        $teachers   = Teacher::orderBy('nama_guru')->get();
 
         return view('tu.schedules.create', compact('classrooms', 'subjects', 'teachers'));
     }
 
+    /**
+     * Simpan Jadwal
+     */
     public function store(Request $request)
     {
-        // 1. Validasi Input (Gunakan nip_teacher)
         $request->validate([
-            'id_kelas' => 'required|exists:classes,id_kelas',
-            'id_mapel' => 'required|exists:subjects,id_mapel',
-            'nip_teacher' => 'required|exists:teachers,nip', // PERBAIKAN
-            'hari' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
-            'jam_mulai' => 'required',
+            'id_kelas'    => 'required|exists:classes,id',
+            'id_mapel'    => 'required|exists:subjects,id',
+            'id_guru'     => 'required|exists:teachers,id',
+            'hari'        => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
+            'jam_mulai'   => 'required',
             'jam_selesai' => 'required|after:jam_mulai',
         ]);
 
-        // 2. Cek Bentrok Jadwal (Gunakan nip_teacher)
-        $bentrok = Schedule::where('nip_teacher', $request->nip_teacher) // PERBAIKAN
-            ->where('hari', $request->hari)
-            ->where(function ($q) use ($request) {
-                $q->whereBetween('jam_mulai', [$request->jam_mulai, $request->jam_selesai])
-                    ->orWhereBetween('jam_selesai', [$request->jam_mulai, $request->jam_selesai]);
-            })->exists();
-
-        if ($bentrok) {
-            return back()->with('error', 'Gagal! Guru tersebut sudah ada jadwal di jam yang sama.');
-        }
-
         Schedule::create($request->all());
 
-        return redirect()->route('tu.schedules.index')->with('success', 'Jadwal berhasil ditambahkan.');
+        return redirect()->route('tu.schedules.index')
+            ->with('success', 'Jadwal pelajaran berhasil ditambahkan.');
     }
 
-    public function edit($id)
+    /**
+     * Form Edit
+     */
+    public function edit(Schedule $schedule)
     {
-        $schedule = Schedule::findOrFail($id);
         $classrooms = Classroom::orderBy('nama_kelas')->get();
-        $subjects = Subject::orderBy('nama_mapel')->get();
-        $teachers = Teacher::orderBy('nama_guru')->get();
+        $subjects   = Subject::orderBy('nama_mapel')->get();
+        $teachers   = Teacher::orderBy('nama_guru')->get();
 
         return view('tu.schedules.edit', compact('schedule', 'classrooms', 'subjects', 'teachers'));
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Update Jadwal
+     */
+    public function update(Request $request, Schedule $schedule)
     {
         $request->validate([
-            'id_kelas' => 'required',
-            'id_mapel' => 'required',
-            'nip_teacher' => 'required',
-            'hari' => 'required',
-            'jam_mulai' => 'required',
+            'id_kelas'    => 'required|exists:classes,id',
+            'id_mapel'    => 'required|exists:subjects,id',
+            'id_guru'     => 'required|exists:teachers,id',
+            'hari'        => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Sabtu',
+            'jam_mulai'   => 'required',
             'jam_selesai' => 'required|after:jam_mulai',
         ]);
 
-        $schedule = Schedule::findOrFail($id);
         $schedule->update($request->all());
 
-        return redirect()->route('tu.schedules.index')->with('info', 'Jadwal diperbarui.');
+        return redirect()->route('tu.schedules.index')
+            ->with('info', 'Jadwal pelajaran berhasil diperbarui.');
     }
 
-    public function destroy($id)
+    /**
+     * Hapus Jadwal
+     */
+    public function destroy(Schedule $schedule)
     {
-        Schedule::findOrFail($id)->delete();
-        return redirect()->route('tu.schedules.index')->with('error', 'Jadwal dihapus.');
+        $schedule->delete();
+        return redirect()->route('tu.schedules.index')
+            ->with('error', 'Jadwal berhasil dihapus.');
     }
 }

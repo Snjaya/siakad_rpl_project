@@ -10,10 +10,9 @@ class Subject extends Model
     use HasFactory;
 
     protected $table = 'subjects';
-    protected $primaryKey = 'id_mapel'; // Sesuai SKPL
 
     protected $fillable = [
         'nama_mapel',
-        'kkm', // Kriteria Ketuntasan Minimal
+        'kkm',
     ];
 }

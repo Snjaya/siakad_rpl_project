@@ -10,24 +10,27 @@ class Grade extends Model
     use HasFactory;
 
     protected $table = 'grades';
-    protected $primaryKey = 'id_nilai'; // Sesuaikan dengan migration (biasanya id atau id_nilai)
 
     protected $fillable = [
-        'id_jadwal', // Link ke jadwal (Mapel + Kelas + Guru)
-        'nis_siswa', // Link ke siswa
+        'id_jadwal', // ID Jadwal Pelajaran
+        'nis_siswa', // NIS Siswa (bukan ID, sesuai controller tadi)
         'tugas',
         'uts',
         'uas',
-        'nilai_akhir', // (Opsional) Bisa hitung otomatis: (Tugas+UTS+UAS)/3
+        'nilai_akhir'
     ];
 
-    // Relasi ke Jadwal
-    public function schedule()
+    /**
+     * Relasi ke Jadwal
+     */
+    public function jadwal()
     {
-        return $this->belongsTo(Schedule::class, 'id_jadwal', 'id_jadwal');
+        return $this->belongsTo(Schedule::class, 'id_jadwal', 'id');
     }
 
-    // Relasi ke Siswa
+    /**
+     * Relasi ke Siswa
+     */
     public function student()
     {
         return $this->belongsTo(Student::class, 'nis_siswa', 'nis');

@@ -12,16 +12,22 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('schedules', function (Blueprint $table) {
-            $table->id('id_jadwal'); // [cite: 81]
-            $table->unsignedBigInteger('id_kelas'); // [cite: 81]
-            $table->unsignedBigInteger('id_mapel'); // [cite: 81]
-            $table->string('nip_teacher'); // Guru Pengampu [cite: 81]
-            $table->string('hari'); // [cite: 81]
-            $table->time('jam_mulai'); // [cite: 81]
-            $table->time('jam_selesai'); // [cite: 81]
-            $table->foreign('id_kelas')->references('id_kelas')->on('classes');
-            $table->foreign('id_mapel')->references('id_mapel')->on('subjects');
-            $table->foreign('nip_teacher')->references('nip')->on('teachers');
+            $table->id();
+
+            // Perbaikan Foreign Keys:
+            // Menghubungkan 'id_kelas' ke tabel 'classes' (kolom id)
+            $table->foreignId('id_kelas')->constrained('classes')->onDelete('cascade');
+
+            // Menghubungkan 'id_mapel' ke tabel 'subjects' (kolom id)
+            $table->foreignId('id_mapel')->constrained('subjects')->onDelete('cascade');
+
+            // Menghubungkan 'id_guru' ke tabel 'teachers' (kolom id)
+            $table->foreignId('id_guru')->constrained('teachers')->onDelete('cascade');
+
+            $table->string('hari');       // Senin, Selasa, dst
+            $table->time('jam_mulai');
+            $table->time('jam_selesai');
+
             $table->timestamps();
         });
     }

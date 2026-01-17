@@ -62,10 +62,9 @@ class ClassroomController extends Controller
     {
         $classroom = Classroom::findOrFail($id);
 
-        // Opsional: Cek apakah kelas masih punya siswa sebelum hapus (untuk keamanan data)
-        // if($classroom->students()->count() > 0) {
-        //     return back()->with('error', 'Gagal hapus! Kelas ini masih memiliki siswa.');
-        // }
+        if ($classroom->students()->count() > 0) {
+            return back()->with('error', 'Gagal hapus! Kelas ini masih memiliki siswa.');
+        }
 
         $classroom->delete();
 

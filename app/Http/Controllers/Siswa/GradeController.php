@@ -3,26 +3,19 @@
 namespace App\Http\Controllers\Siswa;
 
 use App\Http\Controllers\Controller;
-use App\Models\Grade;
-use App\Models\Student;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
+use App\Models\Student;
+use App\Models\Grade;
 
 class GradeController extends Controller
 {
     public function index()
     {
-        // 1. Ambil Siswa yang login
         $user = Auth::user();
-        $student = Student::where('id_user', $user->id)->first();
+        $student = Student::where('id_user', $user->id)->firstOrFail();
 
-        if (!$student) {
-            return redirect()->back()->with('error', 'Data siswa tidak ditemukan.');
-        }
-
-        // 2. Ambil Nilai Siswa tersebut
-        // Kita load relasi ke Jadwal -> Mapel & Guru untuk ditampilkan infonya
-        $grades = Grade::with(['schedule.subject', 'schedule.teacher'])
+        // Ambil Nilai Siswa Ini
+        $grades = Grade::with(['jadwal.subject', 'jadwal.teacher'])
             ->where('nis_siswa', $student->nis)
             ->get();
 

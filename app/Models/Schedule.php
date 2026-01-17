@@ -10,30 +10,38 @@ class Schedule extends Model
     use HasFactory;
 
     protected $table = 'schedules';
-    protected $primaryKey = 'id_jadwal';
 
     protected $fillable = [
         'id_kelas',
         'id_mapel',
-        'nip_teacher', // PERBAIKAN: Gunakan nip_teacher
+        'id_guru',
         'hari',
         'jam_mulai',
         'jam_selesai',
     ];
 
-    public function classroom()
+    /**
+     * Relasi ke Kelas (Classroom)
+     */
+    public function kelas()
     {
-        return $this->belongsTo(Classroom::class, 'id_kelas', 'id_kelas');
+        // belongsTo(Model, Foreign Key di tabel ini, Primary Key di tabel tujuan)
+        return $this->belongsTo(Classroom::class, 'id_kelas', 'id');
     }
 
-    public function subject()
+    /**
+     * Relasi ke Mata Pelajaran (Subject)
+     */
+    public function subject() // atau mapel() sesuaikan pemanggilan di controller/view
     {
-        return $this->belongsTo(Subject::class, 'id_mapel', 'id_mapel');
+        return $this->belongsTo(Subject::class, 'id_mapel', 'id');
     }
 
-    public function teacher()
+    /**
+     * Relasi ke Guru (Teacher)
+     */
+    public function teacher() // atau guru() sesuaikan pemanggilan di controller/view
     {
-        // PERBAIKAN: Relasi ke kolom nip_teacher
-        return $this->belongsTo(Teacher::class, 'nip_teacher', 'nip');
+        return $this->belongsTo(Teacher::class, 'id_guru', 'id');
     }
 }

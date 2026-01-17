@@ -11,19 +11,16 @@ class Teacher extends Model
 
     // Nama tabel di database
     protected $table = 'teachers';
-
-    // Primary Key adalah 'nip' (bukan id)
-    protected $primaryKey = 'nip';
-    public $incrementing = false; // Karena NIP bukan auto-increment
-    protected $keyType = 'string';
-
     protected $fillable = [
+        'id_user',
         'nip',
-        'id_user', // Sesuai migration: foreignId('id_user')
         'nama_guru',
-        'tanggal_lahir',
-        'alamat',
+        'email',
         'no_hp',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'jenis_kelamin',
+        'alamat'
     ];
 
     // Relasi ke User (menggunakan 'id_user')

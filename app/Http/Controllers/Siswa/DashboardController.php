@@ -3,28 +3,40 @@
 namespace App\Http\Controllers\Siswa;
 
 use App\Http\Controllers\Controller;
-use App\Models\Student;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Student;
+use App\Models\Schedule;
+use App\Models\Grade;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // 1. Ambil User yang sedang login
         $user = Auth::user();
 
-        // 2. Cari Data Siswa berdasarkan id_user
-        // Kita perlu load relasi 'classroom' untuk menampilkan nama kelas
-        $student = Student::with('classroom')->where('id_user', $user->id)->first();
+        // 1. Ambil Data Siswa 
+        $student = Student::with('kelas')->where('id_user', $user->id)->first();
 
-        // Jika data siswa belum diinput oleh TU
         if (!$student) {
             return view('siswa.dashboard', [
-                'student' => null
-            ])->with('error', 'Data diri Anda belum terdaftar di sistem akademik. Hubungi Tata Usaha.');
+                'student' => null,
+                'nextSchedule' => null,
+                'averageGrade' => 0
+            ]);
         }
 
-        return view('siswa.dashboard', compact('student'));
+        // 2. Ambil Jadwal Hari Ini
+        $hariIni = \Carbon\Carbon::now()->locale('id')->isoFormat('dddd'); // Senin, Selasa, dst
+        $nextSchedule = Schedule::with(['subject', 'teacher'])
+            ->where('id_kelas', $student->id_kelas)
+            ->where('hari', $hariIni)
+            ->orderBy('jam_mulai', 'asc')
+            ->get();
+
+        // 3. Hitung Rata-rata Nilai (IPK Sederhana)
+        $averageGrade = Grade::where('nis_siswa', $student->nis)->avg('nilai_akhir');
+
+        return view('siswa.dashboard', compact('student', 'nextSchedule', 'averageGrade'));
     }
 }

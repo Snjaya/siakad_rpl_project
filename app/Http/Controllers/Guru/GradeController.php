@@ -3,63 +3,90 @@
 namespace App\Http\Controllers\Guru;
 
 use App\Http\Controllers\Controller;
-use App\Models\Grade;
-use App\Models\Schedule;
-use App\Models\Student;
 use Illuminate\Http\Request;
+use App\Models\Schedule;
+use App\Models\Grade;
+use App\Models\Student;
+use App\Models\Teacher; // <--- Pastikan import ini ada
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class GradeController extends Controller
 {
-    // Menampilkan Form Input Nilai per Jadwal
+    /**
+     * Tampilkan Form Input Nilai per Kelas
+     */
     public function create($schedule_id)
     {
-        $schedule = Schedule::with(['classroom', 'subject'])->findOrFail($schedule_id);
+        // 1. Ambil Data Jadwal
+        $schedule = Schedule::with(['kelas', 'subject', 'teacher'])->findOrFail($schedule_id);
 
+        // 2. Ambil Data Guru yang sedang login (Metode Aman)
+        $user = Auth::user();
+        $teacher = Teacher::where('id_user', $user->id)->first();
+
+        // Cek apakah akun ini benar-benar guru
+        if (!$teacher) {
+            return abort(403, 'Akun Anda tidak terdaftar sebagai Guru.');
+        }
+
+        // 3. Validasi: Pastikan Guru yang login adalah pemilik jadwal ini
+        // (Mencegah guru A menginput nilai pelajaran guru B)
+        if ($schedule->id_guru !== $teacher->id) {
+            return abort(403, 'Anda tidak memiliki hak akses untuk menginput nilai di jadwal ini.');
+        }
+
+        // 4. Ambil Siswa di Kelas tersebut beserta Nilai (jika sudah ada)
         $students = Student::where('id_kelas', $schedule->id_kelas)
+            ->with(['grades' => function ($query) use ($schedule_id) {
+                $query->where('id_jadwal', $schedule_id);
+            }])
             ->orderBy('nama_siswa')
             ->get();
 
-        $existingGrades = Grade::where('id_jadwal', $schedule_id)
-            ->get()
-            ->keyBy('nis_siswa');
-
-        return view('guru.grades.create', compact('schedule', 'students', 'existingGrades'));
+        return view('guru.grades.create', compact('schedule', 'students'));
     }
 
-    // Menyimpan Nilai
+    /**
+     * Simpan Nilai (Bulk Update/Create)
+     */
     public function store(Request $request, $schedule_id)
     {
+        // Validasi input array
         $request->validate([
             'grades' => 'required|array',
+            'grades.*.tugas' => 'nullable|numeric|min:0|max:100',
+            'grades.*.uts'   => 'nullable|numeric|min:0|max:100',
+            'grades.*.uas'   => 'nullable|numeric|min:0|max:100',
         ]);
 
         DB::transaction(function () use ($request, $schedule_id) {
-            foreach ($request->grades as $nis => $data) {
-                // Pastikan input angka, jika kosong anggap 0
+            foreach ($request->grades as $student_id => $data) {
+
+                // Ambil nilai, jika kosong anggap 0
                 $tugas = $data['tugas'] ?? 0;
-                $uts = $data['uts'] ?? 0;
-                $uas = $data['uas'] ?? 0;
+                $uts   = $data['uts'] ?? 0;
+                $uas   = $data['uas'] ?? 0;
 
-                // Rumus Rata-rata
-                $akhir = ($tugas + $uts + $uas) / 3;
+                // Rumus Nilai Akhir: 30% Tugas + 30% UTS + 40% UAS
+                $nilai_akhir = ($tugas * 0.3) + ($uts * 0.3) + ($uas * 0.4);
 
+                // Simpan ke database
                 Grade::updateOrCreate(
                     [
                         'id_jadwal' => $schedule_id,
-                        'nis_siswa' => $nis,
+                        'nis_siswa' => $data['nis'] // Kunci pencarian (NIS)
                     ],
                     [
-                        'tugas' => $tugas,
-                        'uts' => $uts,
-                        'uas' => $uas,
-                        'nilai_akhir' => $akhir
+                        'tugas'       => $tugas,
+                        'uts'         => $uts,
+                        'uas'         => $uas,
+                        'nilai_akhir' => $nilai_akhir
                     ]
                 );
             }
         });
 
-        // Redirect kembali ke halaman input (back) bukan ke dashboard
-        return redirect()->back()->with('success', 'Nilai siswa berhasil disimpan!');
+        return redirect()->route('guru.dashboard')->with('success', 'Nilai berhasil disimpan!');
     }
 }

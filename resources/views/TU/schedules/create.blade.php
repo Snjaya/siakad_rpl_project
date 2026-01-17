@@ -1,86 +1,91 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('Tambah Jadwal Pelajaran') }}</h2>
+        <h2 class="font-bold text-xl text-gray-800 leading-tight">
+            <i class="fa-solid fa-calendar-plus mr-2 text-emerald-600"></i>
+            {{ __('Buat Jadwal Baru') }}
+        </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white p-6 shadow-sm sm:rounded-lg">
-                {{-- Tampilkan Error Validasi (Misal Bentrok) --}}
-                @if (session('error'))
-                    <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                        {{ session('error') }}
-                    </div>
-                @endif
+    <div class="py-12 bg-slate-50 min-h-screen">
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-xl border border-gray-100">
+                <div class="p-8">
+                    <form action="{{ route('tu.schedules.store') }}" method="POST">
+                        @csrf
 
-                <form action="{{ route('tu.schedules.store') }}" method="POST">
-                    @csrf
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Hari</label>
+                                <select name="hari"
+                                    class="w-full rounded-lg border-gray-300 focus:border-emerald-500 transition">
+                                    <option value="">Pilih Hari...</option>
+                                    @foreach (['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $hari)
+                                        <option value="{{ $hari }}">{{ $hari }}</option>
+                                    @endforeach
+                                </select>
+                                @error('hari')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
 
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="mb-4">
-                            <x-input-label for="id_kelas" :value="__('Kelas')" />
-                            <select name="id_kelas" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm"
-                                required>
-                                <option value="">-- Pilih Kelas --</option>
-                                @foreach ($classrooms as $c)
-                                    <option value="{{ $c->id_kelas }}">{{ $c->nama_kelas }}</option>
-                                @endforeach
-                            </select>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Kelas</label>
+                                <select name="id_kelas"
+                                    class="w-full rounded-lg border-gray-300 focus:border-emerald-500 transition">
+                                    <option value="">Pilih Kelas...</option>
+                                    @foreach ($classrooms as $kelas)
+                                        <option value="{{ $kelas->id }}">{{ $kelas->nama_kelas }}</option>
+                                    @endforeach
+                                </select>
+                                @error('id_kelas')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Jam Mulai</label>
+                                <input type="time" name="jam_mulai"
+                                    class="w-full rounded-lg border-gray-300 focus:border-emerald-500 transition">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Jam Selesai</label>
+                                <input type="time" name="jam_selesai"
+                                    class="w-full rounded-lg border-gray-300 focus:border-emerald-500 transition">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Mata Pelajaran</label>
+                                <select name="id_mapel"
+                                    class="w-full rounded-lg border-gray-300 focus:border-emerald-500 transition">
+                                    <option value="">Pilih Mapel...</option>
+                                    @foreach ($subjects as $mapel)
+                                        <option value="{{ $mapel->id }}">{{ $mapel->nama_mapel }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Guru Pengampu</label>
+                                <select name="id_guru"
+                                    class="w-full rounded-lg border-gray-300 focus:border-emerald-500 transition">
+                                    <option value="">Pilih Guru...</option>
+                                    @foreach ($teachers as $guru)
+                                        <option value="{{ $guru->id }}">{{ $guru->nama_guru }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
 
-                        <div class="mb-4">
-                            <x-input-label for="hari" :value="__('Hari')" />
-                            <select name="hari" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm"
-                                required>
-                                <option value="">-- Pilih Hari --</option>
-                                @foreach (['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $hari)
-                                    <option value="{{ $hari }}">{{ $hari }}</option>
-                                @endforeach
-                            </select>
+                        <div class="flex justify-end gap-3 pt-6 border-t border-gray-100">
+                            <a href="{{ route('tu.schedules.index') }}"
+                                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg">Batal</a>
+                            <button type="submit"
+                                class="px-6 py-2 bg-emerald-600 text-white rounded-lg font-bold hover:bg-emerald-700 transition">Simpan
+                                Jadwal</button>
                         </div>
-                    </div>
-
-                    <div class="mb-4">
-                        <x-input-label for="id_mapel" :value="__('Mata Pelajaran')" />
-                        <select name="id_mapel" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                            <option value="">-- Pilih Mapel --</option>
-                            @foreach ($subjects as $s)
-                                <option value="{{ $s->id_mapel }}">{{ $s->nama_mapel }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <x-input-label for="nip_teacher" :value="__('Guru Pengampu')" />
-                        <select id="nip_teacher" name="nip_teacher"
-                            class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                            required>
-                            <option value="">-- Pilih Guru --</option>
-                            @foreach ($teachers as $guru)
-                                <option value="{{ $guru->nip }}">{{ $guru->nama_guru }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="mb-4">
-                            <x-input-label for="jam_mulai" :value="__('Jam Mulai')" />
-                            <input type="time" name="jam_mulai"
-                                class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                        </div>
-
-                        <div class="mb-4">
-                            <x-input-label for="jam_selesai" :value="__('Jam Selesai')" />
-                            <input type="time" name="jam_selesai"
-                                class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" required>
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end mt-6">
-                        <a href="{{ route('tu.schedules.index') }}" class="mr-4 text-gray-600 py-2">Batal</a>
-                        <x-primary-button>Simpan Jadwal</x-primary-button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

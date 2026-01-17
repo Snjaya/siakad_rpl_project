@@ -1,115 +1,183 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Input Nilai: {{ $schedule->subject->nama_mapel }} - {{ $schedule->classroom->nama_kelas }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-
-                {{-- NOTIFIKASI SUKSES (HIJAU) --}}
-                @if (session('success'))
-                    <div class="mb-6 bg-green-50 border-l-4 border-green-500 p-4 text-green-700 shadow-sm transition-all duration-500"
-                        x-data="{ show: true }" x-show="show">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="font-bold"><i class="fa-solid fa-check-circle mr-2"></i>Berhasil!</p>
-                                <p>{{ session('success') }}</p>
-                            </div>
-                            <button @click="show = false" class="text-green-700 hover:text-green-900"><i
-                                    class="fa-solid fa-times"></i></button>
-                        </div>
-                    </div>
-                @endif
-
-                <div class="mb-6 bg-blue-50 p-4 rounded border-l-4 border-blue-500 flex items-start gap-3">
-                    <i class="fa-solid fa-circle-info text-blue-500 mt-1"></i>
-                    <p class="text-sm text-gray-600">
-                        Silakan input nilai siswa di bawah ini. Tekan tombol <strong>Simpan Perubahan</strong> untuk
-                        menyimpan data ke sistem.
-                        <br>Nilai Akhir akan dihitung otomatis dari rata-rata (Tugas + UTS + UAS) / 3.
-                    </p>
-                </div>
-
-                <form action="{{ route('guru.grades.store', $schedule->id_jadwal) }}" method="POST">
-                    @csrf
-
-                    <div class="overflow-x-auto rounded-lg border border-gray-200">
-                        <table class="min-w-full divide-y divide-gray-200 text-sm">
-                            <thead class="bg-slate-100">
-                                <tr>
-                                    <th class="px-4 py-3 text-left font-bold text-slate-600 w-10">No</th>
-                                    <th class="px-4 py-3 text-left font-bold text-slate-600">Nama Siswa</th>
-                                    <th class="px-4 py-3 text-center font-bold text-slate-600 w-32">Nilai Tugas</th>
-                                    <th class="px-4 py-3 text-center font-bold text-slate-600 w-32">Nilai UTS</th>
-                                    <th class="px-4 py-3 text-center font-bold text-slate-600 w-32">Nilai UAS</th>
-                                    <th class="px-4 py-3 text-center font-bold text-slate-600 w-32">Nilai Akhir</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 bg-white">
-                                @forelse($students as $index => $student)
-                                    @php
-                                        $nilai = $existingGrades[$student->nis] ?? null;
-                                    @endphp
-                                    <tr class="hover:bg-slate-50 transition">
-                                        <td class="px-4 py-3 text-center">{{ $index + 1 }}</td>
-                                        <td class="px-4 py-3 font-medium text-gray-800">
-                                            {{ $student->nama_siswa }}
-                                            <div class="text-xs text-gray-400 font-normal">{{ $student->nis }}</div>
-                                        </td>
-
-                                        <td class="px-4 py-3">
-                                            <input type="number" name="grades[{{ $student->nis }}][tugas]"
-                                                value="{{ $nilai->tugas ?? 0 }}" min="0" max="100"
-                                                class="w-full border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 text-center transition">
-                                        </td>
-                                        <td class="px-4 py-3">
-                                            <input type="number" name="grades[{{ $student->nis }}][uts]"
-                                                value="{{ $nilai->uts ?? 0 }}" min="0" max="100"
-                                                class="w-full border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 text-center transition">
-                                        </td>
-                                        <td class="px-4 py-3">
-                                            <input type="number" name="grades[{{ $student->nis }}][uas]"
-                                                value="{{ $nilai->uas ?? 0 }}" min="0" max="100"
-                                                class="w-full border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 text-center transition">
-                                        </td>
-                                        <td class="px-4 py-3 text-center">
-                                            <span
-                                                class="font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded border border-blue-100">
-                                                {{ $nilai ? number_format($nilai->nilai_akhir, 1) : '-' }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="p-8 text-center text-gray-400">
-                                            <div class="flex flex-col items-center justify-center">
-                                                <i class="fa-solid fa-user-slash text-4xl mb-2"></i>
-                                                <p>Tidak ada data siswa di kelas ini.</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div
-                        class="mt-6 flex justify-end gap-3 sticky bottom-0 bg-white p-4 border-t shadow-inner -mx-6 -mb-6">
-                        <a href="{{ route('guru.dashboard') }}"
-                            class="px-5 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition">
-                            <i class="fa-solid fa-arrow-left mr-2"></i>Kembali
-                        </a>
-                        <button type="submit"
-                            class="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg transition transform hover:-translate-y-0.5">
-                            <i class="fa-solid fa-save mr-2"></i> Simpan Perubahan
-                        </button>
-                    </div>
-                </form>
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+            <h2 class="font-bold text-xl text-gray-800 leading-tight flex items-center gap-2">
+                <a href="{{ route('guru.dashboard') }}" class="text-gray-400 hover:text-emerald-600 transition">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <span>Input Nilai Siswa</span>
+            </h2>
+            <div class="text-sm font-medium text-emerald-700 bg-emerald-100 px-4 py-2 rounded-full">
+                {{ $schedule->subject->nama_mapel }} - {{ $schedule->kelas->nama_kelas }}
             </div>
         </div>
+    </x-slot>
+
+    <div class="py-12 bg-slate-50 min-h-screen">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+            <form action="{{ route('guru.grades.store', $schedule->id) }}" method="POST">
+                @csrf
+
+                <div
+                    class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800">Form Penilaian Semester</h3>
+                        <p class="text-gray-500 text-sm">Silakan input nilai Tugas, UTS, dan UAS. Nilai Akhir dihitung
+                            otomatis (30% Tugas + 30% UTS + 40% UAS).</p>
+                    </div>
+                    <button type="submit"
+                        class="w-full md:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-save"></i> Simpan Semua Nilai
+                    </button>
+                </div>
+
+                <div class="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-100 text-slate-600 text-xs uppercase font-bold">
+                            <tr>
+                                <th class="p-4 w-10 text-center">No</th>
+                                <th class="p-4">Nama Siswa</th>
+                                <th class="p-4 w-32 text-center">Tugas (30%)</th>
+                                <th class="p-4 w-32 text-center">UTS (30%)</th>
+                                <th class="p-4 w-32 text-center">UAS (40%)</th>
+                                <th class="p-4 w-24 text-center">Akhir</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 text-sm">
+                            @foreach ($students as $index => $student)
+                                @php
+                                    // Ambil nilai jika ada
+                                    $grade = $student->grades->first();
+                                @endphp
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="p-4 text-center text-gray-400">{{ $index + 1 }}</td>
+                                    <td class="p-4">
+                                        <div class="font-bold text-gray-800">{{ $student->nama_siswa }}</div>
+                                        <div class="text-xs text-gray-400">{{ $student->nis }}</div>
+                                        <input type="hidden" name="grades[{{ $student->id }}][nis]"
+                                            value="{{ $student->nis }}">
+                                    </td>
+                                    <td class="p-4">
+                                        <input type="number" name="grades[{{ $student->id }}][tugas]"
+                                            value="{{ $grade->tugas ?? 0 }}" min="0" max="100"
+                                            class="w-full text-center border-gray-300 rounded focus:border-emerald-500 focus:ring-emerald-200 input-nilai"
+                                            data-id="{{ $student->id }}">
+                                    </td>
+                                    <td class="p-4">
+                                        <input type="number" name="grades[{{ $student->id }}][uts]"
+                                            value="{{ $grade->uts ?? 0 }}" min="0" max="100"
+                                            class="w-full text-center border-gray-300 rounded focus:border-emerald-500 focus:ring-emerald-200 input-nilai"
+                                            data-id="{{ $student->id }}">
+                                    </td>
+                                    <td class="p-4">
+                                        <input type="number" name="grades[{{ $student->id }}][uas]"
+                                            value="{{ $grade->uas ?? 0 }}" min="0" max="100"
+                                            class="w-full text-center border-gray-300 rounded focus:border-emerald-500 focus:ring-emerald-200 input-nilai"
+                                            data-id="{{ $student->id }}">
+                                    </td>
+                                    <td class="p-4 text-center">
+                                        <span id="akhir-desktop-{{ $student->id }}"
+                                            class="font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded">
+                                            {{ $grade->nilai_akhir ?? 0 }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="md:hidden grid grid-cols-1 gap-4">
+                    @foreach ($students as $student)
+                        @php $grade = $student->grades->first(); @endphp
+                        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 relative">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="font-bold text-gray-800">{{ $student->nama_siswa }}</h4>
+                                    <p class="text-xs text-gray-400">{{ $student->nis }}</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[10px] text-gray-400 block">Nilai Akhir</span>
+                                    <span id="akhir-mobile-{{ $student->id }}"
+                                        class="text-lg font-bold text-emerald-600">
+                                        {{ $grade->nilai_akhir ?? 0 }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <input type="hidden" name="grades[{{ $student->id }}][nis]" value="{{ $student->nis }}">
+
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-500 mb-1">TUGAS</label>
+                                    <input type="number" name="grades[{{ $student->id }}][tugas]"
+                                        value="{{ $grade->tugas ?? 0 }}"
+                                        class="w-full text-center border-gray-300 rounded-lg focus:border-emerald-500 input-nilai-mobile"
+                                        data-id="{{ $student->id }}">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-500 mb-1">UTS</label>
+                                    <input type="number" name="grades[{{ $student->id }}][uts]"
+                                        value="{{ $grade->uts ?? 0 }}"
+                                        class="w-full text-center border-gray-300 rounded-lg focus:border-emerald-500 input-nilai-mobile"
+                                        data-id="{{ $student->id }}">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-500 mb-1">UAS</label>
+                                    <input type="number" name="grades[{{ $student->id }}][uas]"
+                                        value="{{ $grade->uas ?? 0 }}"
+                                        class="w-full text-center border-gray-300 rounded-lg focus:border-emerald-500 input-nilai-mobile"
+                                        data-id="{{ $student->id }}">
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <div class="md:hidden fixed bottom-4 left-4 right-4 z-50">
+                    <button type="submit"
+                        class="w-full py-3 bg-emerald-600 text-white font-bold rounded-xl shadow-2xl hover:bg-emerald-700 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-save"></i> SIMPAN SEMUA NILAI
+                    </button>
+                </div>
+
+            </form>
+        </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function hitungNilai(rowInputs, displayId) {}
+
+            const inputs = document.querySelectorAll('.input-nilai, .input-nilai-mobile');
+
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const studentId = this.getAttribute('data-id');
+
+                    // Cari semua input milik siswa ini (baik desktop/mobile punya name pattern sama)
+                    // Kita cari elemen input berdasarkan attribut name yang spesifik
+                    const nameBase = `grades[${studentId}]`;
+                    const tugas = parseFloat(document.querySelector(
+                        `input[name="${nameBase}[tugas]"]`).value) || 0;
+                    const uts = parseFloat(document.querySelector(`input[name="${nameBase}[uts]"]`)
+                        .value) || 0;
+                    const uas = parseFloat(document.querySelector(`input[name="${nameBase}[uas]"]`)
+                        .value) || 0;
+
+                    // Rumus: 30% Tugas + 30% UTS + 40% UAS
+                    const akhir = (tugas * 0.3) + (uts * 0.3) + (uas * 0.4);
+
+                    // Update tampilan Desktop
+                    const displayDesktop = document.getElementById(`akhir-desktop-${studentId}`);
+                    if (displayDesktop) displayDesktop.innerText = akhir.toFixed(1);
+
+                    // Update tampilan Mobile
+                    const displayMobile = document.getElementById(`akhir-mobile-${studentId}`);
+                    if (displayMobile) displayMobile.innerText = akhir.toFixed(1);
+                });
+            });
+        });
+    </script>
 </x-app-layout>

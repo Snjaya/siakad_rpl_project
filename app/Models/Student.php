@@ -9,33 +9,39 @@ class Student extends Model
 {
     use HasFactory;
 
-    // Menghubungkan ke tabel 'students'
-    protected $table = 'students';
-
-    // Primary Key adalah 'nis' (bukan id auto increment)
-    protected $primaryKey = 'nis';
-    public $incrementing = false;
-    protected $keyType = 'string';
-
     protected $fillable = [
+        'id_kelas',
         'nis',
-        'id_user',      // Foreign Key ke tabel users
         'nama_siswa',
-        'tanggal_lahir',
-        'alamat',
+        'jenis_kelamin',
+        'email',
         'no_hp',
-        'id_kelas',     // Foreign Key ke tabel classes
+        'id_user' // Jika ada relasi ke user login
     ];
 
-    // Relasi: Siswa memiliki satu User Akun
+    /**
+     * Relasi ke Kelas
+     */
+    public function kelas()
+    {
+        return $this->belongsTo(Classroom::class, 'id_kelas', 'id');
+    }
+
+    /**
+     * Relasi ke User (Akun Login)
+     */
     public function user()
     {
         return $this->belongsTo(User::class, 'id_user');
     }
 
-    // Relasi: Siswa masuk dalam satu Kelas
-    public function classroom()
+    /**
+     * Relasi ke Nilai (Grades) - INI YANG KETINGGALAN
+     * Menghubungkan tabel students (nis) ke grades (nis_siswa)
+     */
+    public function grades()
     {
-        return $this->belongsTo(Classroom::class, 'id_kelas', 'id_kelas');
+        // hasMany(Model Tujuan, Foreign Key di tabel tujuan, Local Key di tabel ini)
+        return $this->hasMany(Grade::class, 'nis_siswa', 'nis');
     }
 }

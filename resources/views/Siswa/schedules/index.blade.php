@@ -1,52 +1,66 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Jadwal Pelajaran') }} - Kelas {{ $student->classroom->nama_kelas ?? '' }}
+        <h2 class="font-bold text-xl text-gray-800 leading-tight">
+            <i class="fa-regular fa-calendar-days mr-2 text-emerald-600"></i>
+            {{ __('Jadwal Pelajaran') }}
         </h2>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-12 bg-slate-50 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-
-                {{-- Tombol Kembali --}}
-                <div class="mb-6">
-                    <a href="{{ route('siswa.dashboard') }}" class="text-blue-600 hover:text-blue-800 font-medium">
-                        <i class="fa-solid fa-arrow-left mr-2"></i>Kembali ke Dashboard
-                    </a>
+            <div class="mb-6 flex items-center justify-between">
+                <div>
+                    <h3 class="font-bold text-gray-800 text-lg">Jadwal Kelas {{ $student->kelas->nama_kelas }}</h3>
+                    <p class="text-sm text-gray-500">Tahun Ajaran Aktif</p>
                 </div>
-
-                @if ($schedules->isEmpty())
-                    <div class="text-center py-12 bg-slate-50 rounded-lg border border-dashed border-slate-300">
-                        <i class="fa-regular fa-calendar-xmark text-4xl text-gray-400 mb-3"></i>
-                        <p class="text-gray-500">Belum ada jadwal pelajaran untuk kelas Anda.</p>
-                    </div>
-                @else
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {{-- Looping Jadwal per Kartu --}}
-                        @foreach ($schedules as $s)
-                            <div
-                                class="bg-white border rounded-xl shadow-sm hover:shadow-md transition-shadow p-5 border-l-4 border-l-blue-500">
-                                <div class="flex justify-between items-start mb-2">
-                                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-0.5 rounded">
-                                        {{ $s->hari }}
-                                    </span>
-                                    <span class="text-sm font-semibold text-gray-500">
-                                        <i class="fa-regular fa-clock mr-1"></i>
-                                        {{ substr($s->jam_mulai, 0, 5) }} - {{ substr($s->jam_selesai, 0, 5) }}
-                                    </span>
-                                </div>
-                                <h3 class="text-lg font-bold text-gray-800 mt-2">{{ $s->subject->nama_mapel }}</h3>
-                                <p class="text-gray-600 text-sm mt-1">
-                                    <i class="fa-solid fa-chalkboard-user mr-1 text-blue-400"></i>
-                                    {{ $s->teacher->nama_guru }}
-                                </p>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
             </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @php
+                    // Grouping jadwal berdasarkan hari secara manual agar urut Senin-Sabtu
+                    $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+                    $grouped = $schedules->groupBy('hari');
+                @endphp
+
+                @foreach ($days as $day)
+                    @if (isset($grouped[$day]))
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div class="bg-emerald-600 px-4 py-3 flex justify-between items-center">
+                                <h4 class="font-bold text-white">{{ $day }}</h4>
+                                <span class="bg-white/20 text-white text-xs px-2 py-1 rounded-full">
+                                    {{ $grouped[$day]->count() }} Mapel
+                                </span>
+                            </div>
+                            <div class="divide-y divide-gray-100">
+                                @foreach ($grouped[$day] as $jadwal)
+                                    <div class="p-4 hover:bg-slate-50 transition">
+                                        <div class="flex justify-between items-start mb-1">
+                                            <h5 class="font-bold text-gray-800 text-sm">
+                                                {{ $jadwal->subject->nama_mapel }}</h5>
+                                            <span
+                                                class="text-xs font-mono font-semibold text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                                                {{ \Carbon\Carbon::parse($jadwal->jam_mulai)->format('H:i') }}
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-2 text-xs text-gray-500">
+                                            <i class="fa-solid fa-chalkboard-user text-emerald-500"></i>
+                                            {{ $jadwal->teacher->nama_guru }}
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
+            </div>
+
+            @if ($schedules->isEmpty())
+                <div class="text-center p-12 bg-white rounded-xl shadow-sm border border-dashed border-gray-300">
+                    <p class="text-gray-400">Belum ada jadwal pelajaran untuk kelas ini.</p>
+                </div>
+            @endif
+
         </div>
     </div>
 </x-app-layout>
