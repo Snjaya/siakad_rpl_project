@@ -53,3 +53,30 @@ npm install
 # Setup Environment
 cp .env.example .env
 php artisan key:generate
+```
+3. Setup Database
+
+Buat database baru di phpMyAdmin bernama siakad_smk_marhas, lalu jalankan migrasi dan seeder (Data Dummy):
+```Bash
+php artisan migrate:fresh --seed
+```
+4. Menjalankan Aplikasi
+Buka 2 terminal terpisah dan jalankan:
+Terminal 1:
+```Bash
+npm run dev
+```
+Terminal 2:
+```Bash
+php artisan serve
+```
+Akses aplikasi di: http://localhost:8000
+
+🔑 Akun Demo (Login)
+Gunakan akun berikut untuk mencoba fitur-fitur yang ada:
+| Role | Username / Email | Password | Keterangan |
+| :--- | :--- | :--- | :--- |
+| **👑 Administrator** | `admin` | `password` | Akses Full Sistem |
+| **🏢 Tata Usaha** | `tatausaha` | `password` | Kelola Data Master |
+| **👨‍🏫 Guru** | *NIP* (Cek tabel `users`) | `guru123` | Input Nilai |
+| **👨‍🎓 Siswa** | *NIS* (Cek tabel `users`) | `siswa123` | Lihat KHS & Jadwal |
