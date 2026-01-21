@@ -14,6 +14,8 @@ use App\Http\Controllers\TU\TeacherController;
 use App\Http\Controllers\TU\ScheduleController;
 use App\Http\Controllers\TU\ClassroomController;
 use App\Http\Controllers\TU\AcademicYearController;
+// Import Controller Dashboard TU yang baru
+use App\Http\Controllers\TU\DashboardController as TUDashboardController;
 
 // --- Imports Controller Guru ---
 use App\Http\Controllers\Guru\GradeController;
@@ -23,6 +25,7 @@ use App\Http\Controllers\Guru\DashboardController as GuruDashboardController;
 use App\Http\Controllers\Siswa\DashboardController as SiswaDashboardController;
 use App\Http\Controllers\Siswa\ScheduleController as SiswaScheduleController;
 use App\Http\Controllers\Siswa\GradeController as SiswaGradeController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -71,15 +74,17 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->group(function () {
     ]);
 
     // Fitur Reset Password
-    Route::get('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('admin.users.reset');
-    Route::patch('/users/{user}/reset-password', [UserController::class, 'updatePassword'])->name('admin.users.update-password');
+    Route::get('users/{user}/password', [UserController::class, 'editPassword'])->name('admin.users.password');
+    Route::put('users/{user}/password', [UserController::class, 'updatePassword'])->name('admin.users.password.update');
 });
 
 // Aktor: Tata Usaha (TU)
 Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('tu.dashboard');
-    })->name('tu.dashboard');
+
+    // --- PERBAIKAN DI SINI ---
+    // Menggunakan Controller Class, BUKAN function() {...}
+    Route::get('/dashboard', [TUDashboardController::class, 'index'])->name('tu.dashboard');
+    // -------------------------
 
     // Data Guru
     Route::resource('teachers', TeacherController::class)->names([

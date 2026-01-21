@@ -109,11 +109,22 @@
                                     </td>
                                     <td class="p-4 text-center">
                                         <div class="flex justify-center gap-2">
+
+                                            {{-- Tombol Edit --}}
                                             <a href="{{ route('admin.users.edit', $user->id) }}"
                                                 class="w-8 h-8 flex items-center justify-center rounded bg-yellow-50 text-yellow-600 hover:bg-yellow-100 border border-yellow-200 transition shadow-sm"
-                                                title="Edit">
+                                                title="Edit Data">
                                                 <i class="fa-solid fa-pen-to-square"></i>
                                             </a>
+
+                                            {{-- TOMBOL BARU: RESET PASSWORD --}}
+                                            <a href="{{ route('admin.users.password', $user->id) }}"
+                                                class="w-8 h-8 flex items-center justify-center rounded bg-purple-50 text-purple-600 hover:bg-purple-100 border border-purple-200 transition shadow-sm"
+                                                title="Reset Password">
+                                                <i class="fa-solid fa-key"></i>
+                                            </a>
+
+                                            {{-- Tombol Hapus --}}
                                             <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
                                                 onsubmit="return confirm('Hapus user {{ $user->username }}?');">
                                                 @csrf @method('DELETE')
@@ -123,6 +134,7 @@
                                                     <i class="fa-solid fa-trash"></i>
                                                 </button>
                                             </form>
+
                                         </div>
                                     </td>
                                 </tr>
@@ -158,9 +170,19 @@
                                     {{ $user->role }}
                                 </span>
                             </div>
+
                             <div class="flex justify-end gap-2 mt-3 pt-3 border-t border-gray-50">
+                                {{-- Tombol Edit --}}
                                 <a href="{{ route('admin.users.edit', $user->id) }}"
                                     class="flex-1 py-2 text-center rounded bg-yellow-50 text-yellow-700 text-sm font-semibold border border-yellow-200">Edit</a>
+
+                                {{-- TOMBOL BARU: RESET PASSWORD --}}
+                                <a href="{{ route('admin.users.password', $user->id) }}"
+                                    class="flex-1 py-2 text-center rounded bg-purple-50 text-purple-700 text-sm font-semibold border border-purple-200 flex items-center justify-center gap-1">
+                                    <i class="fa-solid fa-key text-xs"></i> Reset
+                                </a>
+
+                                {{-- Tombol Hapus --}}
                                 <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
                                     class="flex-1" onsubmit="return confirm('Hapus user?');">
                                     @csrf @method('DELETE')

@@ -97,4 +97,29 @@ class UserController extends Controller
         $user->delete();
         return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus!');
     }
+
+    /**
+     * Tampilkan Form Reset Password
+     */
+    public function editPassword(User $user)
+    {
+        return view('admin.users.password', compact('user'));
+    }
+
+    /**
+     * Proses Update Password
+     */
+    public function updatePassword(Request $request, User $user)
+    {
+        $request->validate([
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+        ]);
+
+        $user->update([
+            'password' => Hash::make($request->password)
+        ]);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Password untuk user ' . $user->username . ' berhasil direset!');
+    }
 }
