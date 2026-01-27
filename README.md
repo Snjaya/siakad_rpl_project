@@ -55,6 +55,22 @@ cp .env.example .env
 php artisan key:generate
 ```
 3. Setup Database
+Buka file bernama .env di folder project.
+
+    - Cari bagian DB_CONNECTION (biasanya baris 11).
+
+    - Ubah sqlite menjadi mysql dan sesuaikan nama databasenya:
+
+Cuplikan kode
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=siakad_smk_marhas
+DB_USERNAME=root
+DB_PASSWORD=
+```
+(Simpan file .env setelah diedit)
 
 Buat database baru di phpMyAdmin bernama siakad_smk_marhas, lalu jalankan migrasi dan seeder (Data Dummy):
 ```Bash
