@@ -46,7 +46,8 @@ class StudentController extends Controller
             'nama_siswa'    => 'required|string|max:255',
             'email'         => 'required|email|unique:users,email',
             'tanggal_lahir' => 'required|date',
-            'no_hp'         => 'required|string|max:15',
+            // FIX: Ubah 'required' jadi 'nullable' agar No HP boleh kosong
+            'no_hp'         => 'nullable|string|max:15',
             'alamat'        => 'nullable|string',
             'id_kelas'      => 'required|exists:classes,id',
         ]);
@@ -69,7 +70,6 @@ class StudentController extends Controller
                 'tanggal_lahir' => $request->tanggal_lahir,
                 'no_hp'         => $request->no_hp,
                 'alamat'        => $request->alamat,
-                // Field lain (tempat_lahir, jenis_kelamin) bisa ditambahkan jika formnya ada
             ]);
         });
 
@@ -96,7 +96,8 @@ class StudentController extends Controller
         $request->validate([
             'nama_siswa'    => 'required|string|max:255',
             'tanggal_lahir' => 'required|date',
-            'no_hp'         => 'required|string|max:15',
+            // FIX: Ubah 'required' jadi 'nullable' agar No HP boleh kosong saat edit
+            'no_hp'         => 'nullable|string|max:15',
             'alamat'        => 'nullable|string',
             'id_kelas'      => 'required|exists:classes,id',
         ]);

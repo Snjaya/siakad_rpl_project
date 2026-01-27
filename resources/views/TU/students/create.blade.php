@@ -10,6 +10,7 @@
                     @csrf
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- Bagian NIS, Nama, Email, Kelas, Tanggal Lahir (SAMA SEPERTI SEBELUMNYA) --}}
                         <div>
                             <x-input-label for="nis" :value="__('NIS (Nomor Induk Siswa)')" />
                             <x-text-input id="nis" class="block mt-1 w-full" type="number" name="nis"
@@ -38,8 +39,10 @@
                                 required>
                                 <option value="">-- Pilih Kelas --</option>
                                 @foreach ($classrooms as $kelas)
-                                    <option value="{{ $kelas->id_kelas }}">{{ $kelas->nama_kelas }} (Tk.
-                                        {{ $kelas->tingkat }})</option>
+                                    <option value="{{ $kelas->id }}"
+                                        {{ old('id_kelas') == $kelas->id ? 'selected' : '' }}>
+                                        {{ $kelas->nama_kelas }} (Tk. {{ $kelas->tingkat }})
+                                    </option>
                                 @endforeach
                             </select>
                             <x-input-error :messages="$errors->get('id_kelas')" class="mt-2" />
@@ -51,10 +54,14 @@
                                 name="tanggal_lahir" :value="old('tanggal_lahir')" required />
                         </div>
 
+                        {{-- PERUBAHAN DI SINI: NOMOR HP --}}
                         <div>
-                            <x-input-label for="no_hp" :value="__('Nomor HP')" />
+                            {{-- Tambahkan teks (Opsional) --}}
+                            <x-input-label for="no_hp" :value="__('Nomor HP (Opsional)')" />
+
+                            {{-- HAPUS atribut 'required' di bawah ini --}}
                             <x-text-input id="no_hp" class="block mt-1 w-full" type="text" name="no_hp"
-                                :value="old('no_hp')" required />
+                                :value="old('no_hp')" />
                         </div>
 
                         <div class="md:col-span-2">

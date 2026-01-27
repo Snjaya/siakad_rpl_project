@@ -41,7 +41,7 @@ Ikuti langkah ini untuk menjalankan project di laptop Anda:
 ### 2. Instalasi
 ```bash
 # Clone repository
-git clone [https://github.com/username-kamu/siakad-smk-marhas.git](https://github.com/username-kamu/siakad-smk-marhas.git)
+git clone https://github.com/Snjaya/siakad_rpl_project.git
 
 # Masuk ke folder project
 cd siakad-smk-marhas
