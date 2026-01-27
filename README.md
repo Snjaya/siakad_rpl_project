@@ -54,12 +54,10 @@ npm install
 cp .env.example .env
 php artisan key:generate
 ```
-3. Setup Database
+### 3. Setup Database
 Buka file bernama .env di folder project.
-
-    - Cari bagian DB_CONNECTION (biasanya baris 11).
-
-    - Ubah sqlite menjadi mysql dan sesuaikan nama databasenya:
+- Cari bagian DB_CONNECTION (biasanya baris 11).
+- Ubah sqlite menjadi mysql dan sesuaikan nama databasenya:
 
 Cuplikan kode
 ```
