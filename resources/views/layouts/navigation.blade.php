@@ -23,16 +23,33 @@
 
     <div class="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3 space-y-1 custom-scrollbar">
 
-        <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')"
-            class="group flex items-center px-3 py-3 mb-4 rounded-xl transition-all duration-200 relative
-            {{ request()->routeIs('dashboard')
-                ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/50'
-                : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-            <i class="fa-solid fa-house w-6 text-center text-lg"></i>
-            <span class="ml-3 font-medium text-sm whitespace-nowrap transition-all duration-300" x-show="sidebarOpen">
-                Dashboard
-            </span>
-        </x-responsive-nav-link>
+        <x-responsive-nav-link
+    :href="route('dashboard')"
+    :active="
+        request()->routeIs('admin.dashboard') ||
+        request()->routeIs('tu.dashboard') ||
+        request()->routeIs('guru.dashboard') ||
+        request()->routeIs('siswa.dashboard')
+    "
+    class="flex items-center px-3 py-2.5 mb-1 rounded-lg transition-all
+    {{
+        request()->routeIs('admin.dashboard') ||
+        request()->routeIs('tu.dashboard') ||
+        request()->routeIs('guru.dashboard') ||
+        request()->routeIs('siswa.dashboard')
+            ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500'
+            : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+    }}">
+
+    <i class="fa-solid fa-house w-6 text-center text-lg"></i>
+
+    <span class="ml-3 font-medium text-sm whitespace-nowrap"
+          x-show="sidebarOpen">
+        Dashboard
+    </span>
+</x-responsive-nav-link>
+
+
 
         <div class="border-t border-slate-800 my-4 mx-2"></div>
 
@@ -41,7 +58,7 @@
                 <p class="px-4 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap transition-opacity"
                     x-show="sidebarOpen">Administrator</p>
                 <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')"
-                    class="group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200 
+                    class="group flex items-center px-3 py-2.5 rounded-lg transition-all duration-200
                     {{ request()->routeIs('admin.users.*') ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
                     <i class="fa-solid fa-users-gear w-6 text-center"></i>
                     <span class="ml-3 text-sm font-medium whitespace-nowrap" x-show="sidebarOpen">Kelola Akun</span>
