@@ -14,18 +14,18 @@ use App\Http\Controllers\TU\TeacherController;
 use App\Http\Controllers\TU\ScheduleController;
 use App\Http\Controllers\TU\ClassroomController;
 use App\Http\Controllers\TU\AcademicYearController;
-// Import Controller Dashboard TU yang baru
 use App\Http\Controllers\TU\DashboardController as TUDashboardController;
 
 // --- Imports Controller Guru ---
 use App\Http\Controllers\Guru\GradeController;
 use App\Http\Controllers\Guru\DashboardController as GuruDashboardController;
+use App\Http\Controllers\Guru\StudentController as GuruStudentController;
+use App\Http\Controllers\Guru\ScheduleController as GuruScheduleController;
 
 // --- Imports Controller Siswa ---
 use App\Http\Controllers\Siswa\DashboardController as SiswaDashboardController;
 use App\Http\Controllers\Siswa\ScheduleController as SiswaScheduleController;
 use App\Http\Controllers\Siswa\GradeController as SiswaGradeController;
-
 
 /*
 |--------------------------------------------------------------------------
@@ -33,12 +33,10 @@ use App\Http\Controllers\Siswa\GradeController as SiswaGradeController;
 |--------------------------------------------------------------------------
 */
 
-// 1. Redirect root URL (/) langsung ke halaman Login
 Route::redirect('/', '/login');
 
 /**
  * Logika Pengalihan Dashboard Berdasarkan Role
- * Diarahkan ke rute spesifik aktor setelah login berhasil.
  */
 Route::get('/dashboard', function () {
     $role = Auth::user()->role;
@@ -52,18 +50,14 @@ Route::get('/dashboard', function () {
     };
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-/**
- * Route Grouping Berdasarkan Role
- * Menggunakan Middleware RoleManager untuk otorisasi akses.
- */
-
+// ============================================================
 // Aktor: Admin
+// ============================================================
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('admin.dashboard');
 
-    // Fitur Kelola Akun User
     Route::resource('users', UserController::class)->names([
         'index' => 'admin.users.index',
         'create' => 'admin.users.create',
@@ -73,18 +67,24 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->group(function () {
         'destroy' => 'admin.users.destroy',
     ]);
 
-    // Fitur Reset Password
     Route::get('users/{user}/password', [UserController::class, 'editPassword'])->name('admin.users.password');
     Route::put('users/{user}/password', [UserController::class, 'updatePassword'])->name('admin.users.password.update');
 });
 
+// ============================================================
 // Aktor: Tata Usaha (TU)
+// ============================================================
 Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
 
-    // --- PERBAIKAN DI SINI ---
-    // Menggunakan Controller Class, BUKAN function() {...}
     Route::get('/dashboard', [TUDashboardController::class, 'index'])->name('tu.dashboard');
-    // -------------------------
+
+    // --- ⚠️ PENTING: ROUTE PRINT WAJIB DI ATAS RESOURCE ---
+    Route::get('/teachers/print', [TeacherController::class, 'print'])->name('tu.teachers.print');
+    Route::get('/students/print', [StudentController::class, 'print'])->name('tu.students.print');
+    Route::get('/schedules/print', [App\Http\Controllers\TU\ScheduleController::class, 'print'])->name('tu.schedules.print');
+
+    Route::get('/promotion', [App\Http\Controllers\TU\StudentController::class, 'promotionPage'])->name('tu.students.promotion');
+    Route::post('/promotion', [App\Http\Controllers\TU\StudentController::class, 'promote'])->name('tu.students.promote');
 
     // Data Guru
     Route::resource('teachers', TeacherController::class)->names([
@@ -134,25 +134,28 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
     ]);
 });
 
+// ============================================================
 // Aktor: Guru
+// ============================================================
 Route::middleware(['auth', 'role:Guru'])->prefix('guru')->group(function () {
-    // Dashboard Guru
     Route::get('/dashboard', [GuruDashboardController::class, 'index'])->name('guru.dashboard');
+    Route::get('/schedules', [GuruScheduleController::class, 'index'])->name('guru.schedules.index');
+    Route::get('/students', [GuruStudentController::class, 'index'])->name('guru.students.index');
 
-    // Route Input Nilai
+    // Manajemen Nilai
     Route::get('/grades/{schedule}/input', [GradeController::class, 'create'])->name('guru.grades.create');
     Route::post('/grades/{schedule}/store', [GradeController::class, 'store'])->name('guru.grades.store');
+    Route::get('/grades/{schedule}/edit', [GradeController::class, 'edit'])->name('guru.grades.edit');
+    Route::put('/grades/{schedule}/update', [GradeController::class, 'update'])->name('guru.grades.update');
+    Route::get('/grades/{schedule}/print', [GradeController::class, 'print'])->name('guru.grades.print');
 });
 
+// ============================================================
 // Aktor: Siswa
+// ============================================================
 Route::middleware(['auth', 'role:Siswa'])->prefix('siswa')->group(function () {
-    // Dashboard Siswa
     Route::get('/dashboard', [SiswaDashboardController::class, 'index'])->name('siswa.dashboard');
-
-    // Route Jadwal Siswa
     Route::get('/my-schedule', [SiswaScheduleController::class, 'index'])->name('siswa.schedules.index');
-
-    // Route Nilai Siswa
     Route::get('/my-grades', [SiswaGradeController::class, 'index'])->name('siswa.grades.index');
 });
 

@@ -103,4 +103,23 @@ class ScheduleController extends Controller
         return redirect()->route('tu.schedules.index')
             ->with('error', 'Jadwal berhasil dihapus.');
     }
+
+    public function print(Request $request)
+    {
+        $query = Schedule::with(['kelas', 'subject', 'teacher']);
+        $namaKelas = "Semua Jadwal";
+
+        if ($request->has('id_kelas') && $request->id_kelas != '') {
+            $query->where('id_kelas', $request->id_kelas);
+            $kelas = Classroom::find($request->id_kelas);
+            $namaKelas = "Kelas " . $kelas->nama_kelas;
+        }
+
+        $schedules = $query->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
+            ->orderBy('jam_mulai', 'asc')
+            ->get()
+            ->groupBy('hari');
+
+        return view('tu.schedules.print', compact('schedules', 'namaKelas'));
+    }
 }

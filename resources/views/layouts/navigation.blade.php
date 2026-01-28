@@ -23,33 +23,24 @@
 
     <div class="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3 space-y-1 custom-scrollbar">
 
-        <x-responsive-nav-link
-    :href="route('dashboard')"
-    :active="
-        request()->routeIs('admin.dashboard') ||
-        request()->routeIs('tu.dashboard') ||
-        request()->routeIs('guru.dashboard') ||
-        request()->routeIs('siswa.dashboard')
-    "
-    class="flex items-center px-3 py-2.5 mb-1 rounded-lg transition-all
-    {{
-        request()->routeIs('admin.dashboard') ||
-        request()->routeIs('tu.dashboard') ||
-        request()->routeIs('guru.dashboard') ||
-        request()->routeIs('siswa.dashboard')
-            ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500'
-            : 'text-slate-400 hover:bg-slate-800 hover:text-white'
-    }}">
+        <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('admin.dashboard') ||
+            request()->routeIs('tu.dashboard') ||
+            request()->routeIs('guru.dashboard') ||
+            request()->routeIs('siswa.dashboard')"
+            class="flex items-center px-3 py-2.5 mb-1 rounded-lg transition-all
+    {{ request()->routeIs('admin.dashboard') ||
+    request()->routeIs('tu.dashboard') ||
+    request()->routeIs('guru.dashboard') ||
+    request()->routeIs('siswa.dashboard')
+        ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500'
+        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
 
-    <i class="fa-solid fa-house w-6 text-center text-lg"></i>
+            <i class="fa-solid fa-house w-6 text-center text-lg"></i>
 
-    <span class="ml-3 font-medium text-sm whitespace-nowrap"
-          x-show="sidebarOpen">
-        Dashboard
-    </span>
-</x-responsive-nav-link>
-
-
+            <span class="ml-3 font-medium text-sm whitespace-nowrap" x-show="sidebarOpen">
+                Dashboard
+            </span>
+        </x-responsive-nav-link>
 
         <div class="border-t border-slate-800 my-4 mx-2"></div>
 
@@ -77,10 +68,19 @@
                     <span class="ml-3 text-sm font-medium whitespace-nowrap" x-show="sidebarOpen">Data Guru</span>
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link :href="route('tu.students.index')" :active="request()->routeIs('tu.students.*')"
-                    class="flex items-center px-3 py-2.5 mb-1 rounded-lg transition-all {{ request()->routeIs('tu.students.*') ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                <x-responsive-nav-link :href="route('tu.students.index')" :active="request()->routeIs('tu.students.index') ||
+                    request()->routeIs('tu.students.edit') ||
+                    request()->routeIs('tu.students.create')"
+                    class="flex items-center px-3 py-2.5 mb-1 rounded-lg transition-all {{ request()->routeIs('tu.students.index') || request()->routeIs('tu.students.edit') || request()->routeIs('tu.students.create') ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
                     <i class="fa-solid fa-user-graduate w-6 text-center"></i>
                     <span class="ml-3 text-sm font-medium whitespace-nowrap" x-show="sidebarOpen">Data Siswa</span>
+                </x-responsive-nav-link>
+
+                {{-- FITUR BARU: KENAIKAN KELAS --}}
+                <x-responsive-nav-link :href="route('tu.students.promotion')" :active="request()->routeIs('tu.students.promotion')"
+                    class="flex items-center px-3 py-2.5 mb-1 rounded-lg transition-all {{ request()->routeIs('tu.students.promotion') ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fa-solid fa-angles-up w-6 text-center"></i>
+                    <span class="ml-3 text-sm font-medium whitespace-nowrap" x-show="sidebarOpen">Kenaikan Kelas</span>
                 </x-responsive-nav-link>
 
                 <x-responsive-nav-link :href="route('tu.classrooms.index')" :active="request()->routeIs('tu.classrooms.*')"
@@ -117,10 +117,17 @@
             <div class="mb-2">
                 <p class="px-4 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap transition-opacity"
                     x-show="sidebarOpen">Aktivitas</p>
-                <x-responsive-nav-link :href="route('dashboard')"
-                    class="flex items-center px-3 py-2.5 rounded-lg transition-all {{ request()->routeIs('dashboard') ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
-                    <i class="fa-solid fa-pen-to-square w-6 text-center"></i>
+
+                <x-responsive-nav-link :href="route('guru.schedules.index')" :active="request()->routeIs('guru.schedules.*') || request()->routeIs('guru.grades.*')"
+                    class="flex items-center px-3 py-2.5 mb-1 rounded-lg transition-all {{ request()->routeIs('guru.schedules.*') || request()->routeIs('guru.grades.*') ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fa-solid fa-calendar-days w-6 text-center"></i>
                     <span class="ml-3 text-sm font-medium whitespace-nowrap" x-show="sidebarOpen">Jadwal & Nilai</span>
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('guru.students.index')" :active="request()->routeIs('guru.students.*')"
+                    class="flex items-center px-3 py-2.5 rounded-lg transition-all {{ request()->routeIs('guru.students.*') ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fa-solid fa-users w-6 text-center"></i>
+                    <span class="ml-3 text-sm font-medium whitespace-nowrap" x-show="sidebarOpen">Data Siswa Ajar</span>
                 </x-responsive-nav-link>
             </div>
         @endif

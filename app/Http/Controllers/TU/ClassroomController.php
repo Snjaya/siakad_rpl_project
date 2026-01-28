@@ -9,10 +9,17 @@ use Illuminate\Http\Request;
 
 class ClassroomController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil data kelas beserta nama Wali Kelasnya
-        $classrooms = Classroom::with('teacher')->orderBy('tingkat')->orderBy('nama_kelas')->get();
+        $query = Classroom::with('teacher');
+
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where('nama_kelas', 'like', "%{$search}%")
+                ->orWhere('jurusan', 'like', "%{$search}%");
+        }
+
+        $classrooms = $query->orderBy('tingkat', 'asc')->orderBy('nama_kelas', 'asc')->get();
         return view('tu.classrooms.index', compact('classrooms'));
     }
 

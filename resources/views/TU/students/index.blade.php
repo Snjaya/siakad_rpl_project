@@ -11,6 +11,7 @@
     <div class="py-12 bg-slate-50 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
+            {{-- Flash Messages --}}
             @foreach (['success', 'info', 'error'] as $msg)
                 @if (session($msg))
                     <div x-data="{ show: true }" x-show="show"
@@ -29,33 +30,63 @@
 
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-xl border border-gray-100">
 
-                <div
-                    class="p-6 border-b border-gray-100 bg-white flex flex-col md:flex-row justify-between items-center gap-4">
+                {{-- HEADER TOOLS: Search, Filter, Print, Add --}}
+                <div class="p-6 border-b border-gray-100 bg-white">
+                    <form method="GET" action="{{ route('tu.students.index') }}"
+                        class="flex flex-col lg:flex-row justify-between items-center gap-4">
 
-                    <div class="text-gray-500 text-sm font-medium w-full md:w-auto">
-                        Total Siswa: <span class="text-emerald-600 font-bold text-lg">{{ $students->total() }}</span>
-                    </div>
+                        {{-- Kiri: Total & Search --}}
+                        <div class="w-full lg:w-auto flex flex-col md:flex-row gap-3 items-center">
+                            <div class="text-gray-500 text-sm font-medium whitespace-nowrap">
+                                Total Siswa: <span
+                                    class="text-emerald-600 font-bold text-lg">{{ $students->total() }}</span>
+                            </div>
 
-                    <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto items-center">
+                            {{-- Input Search --}}
+                            <div class="relative w-full md:w-64">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                                <input type="text" name="search" value="{{ request('search') }}"
+                                    class="w-full py-2 pl-10 pr-4 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
+                                    placeholder="Cari nama atau NIS...">
+                            </div>
 
-                        <div class="relative w-full md:w-64">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                            </span>
-                            <input type="text"
-                                class="w-full py-2 pl-10 pr-4 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition"
-                                placeholder="Cari nama atau NIS...">
+                            {{-- Dropdown Filter Kelas (NEW) --}}
+                            <select name="id_kelas" onchange="this.form.submit()"
+                                class="w-full md:w-48 py-2 pl-3 pr-8 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition cursor-pointer">
+                                <option value="">Semua Kelas</option>
+                                {{-- Pastikan Controller mengirim variabel $classes --}}
+                                @foreach ($classes as $kelas)
+                                    <option value="{{ $kelas->id }}"
+                                        {{ request('id_kelas') == $kelas->id ? 'selected' : '' }}>
+                                        {{ $kelas->nama_kelas }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
 
-                        <a href="{{ route('tu.students.create') }}"
-                            class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 whitespace-nowrap">
-                            <i class="fa-solid fa-plus text-sm"></i>
-                            <span>Daftar Siswa</span>
-                        </a>
+                        {{-- Kanan: Tombol Aksi --}}
+                        <div class="flex flex-row gap-2 w-full lg:w-auto">
+                            {{-- TOMBOL CETAK (NEW) --}}
+                            <a href="{{ route('tu.students.print', ['id_kelas' => request('id_kelas')]) }}"
+                                target="_blank"
+                                class="flex-1 lg:flex-none bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm hover:shadow transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-print"></i>
+                                <span class="hidden md:inline">Cetak</span>
+                            </a>
 
-                    </div>
+                            {{-- Tombol Tambah --}}
+                            <a href="{{ route('tu.students.create') }}"
+                                class="flex-1 lg:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm hover:shadow transition flex items-center justify-center gap-2 whitespace-nowrap">
+                                <i class="fa-solid fa-plus text-sm"></i>
+                                <span>Tambah Siswa</span>
+                            </a>
+                        </div>
+                    </form>
                 </div>
 
+                {{-- TABLE DESKTOP --}}
                 <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -151,6 +182,7 @@
                     </table>
                 </div>
 
+                {{-- MOBILE CARDS --}}
                 <div class="md:hidden grid grid-cols-1 gap-4 p-4 bg-slate-50">
                     @forelse($students as $student)
                         <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 relative overflow-hidden">

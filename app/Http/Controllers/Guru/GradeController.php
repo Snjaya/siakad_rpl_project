@@ -7,52 +7,38 @@ use Illuminate\Http\Request;
 use App\Models\Schedule;
 use App\Models\Grade;
 use App\Models\Student;
-use App\Models\Teacher; // <--- Pastikan import ini ada
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 
 class GradeController extends Controller
 {
     /**
-     * Tampilkan Form Input Nilai per Kelas
+     * Menampilkan Form Input Nilai (Mode: Tambah Baru)
      */
-    public function create($schedule_id)
+    public function create($scheduleId)
     {
-        // 1. Ambil Data Jadwal
-        $schedule = Schedule::with(['kelas', 'subject', 'teacher'])->findOrFail($schedule_id);
+        $schedule = Schedule::with(['kelas', 'subject'])->findOrFail($scheduleId);
 
-        // 2. Ambil Data Guru yang sedang login (Metode Aman)
-        $user = Auth::user();
-        $teacher = Teacher::where('id_user', $user->id)->first();
-
-        // Cek apakah akun ini benar-benar guru
-        if (!$teacher) {
-            return abort(403, 'Akun Anda tidak terdaftar sebagai Guru.');
-        }
-
-        // 3. Validasi: Pastikan Guru yang login adalah pemilik jadwal ini
-        // (Mencegah guru A menginput nilai pelajaran guru B)
-        if ($schedule->id_guru !== $teacher->id) {
-            return abort(403, 'Anda tidak memiliki hak akses untuk menginput nilai di jadwal ini.');
-        }
-
-        // 4. Ambil Siswa di Kelas tersebut beserta Nilai (jika sudah ada)
         $students = Student::where('id_kelas', $schedule->id_kelas)
-            ->with(['grades' => function ($query) use ($schedule_id) {
-                $query->where('id_jadwal', $schedule_id);
-            }])
-            ->orderBy('nama_siswa')
+            ->orderBy('nama_siswa', 'asc')
             ->get();
+
+        // Cek apakah nilai sudah ada
+        $existingGrade = Grade::where('id_jadwal', $scheduleId)->exists();
+        if ($existingGrade) {
+            return redirect()->route('guru.grades.edit', $scheduleId)
+                ->with('info', 'Nilai sudah ada. Dialihkan ke mode Edit.');
+        }
 
         return view('guru.grades.create', compact('schedule', 'students'));
     }
 
     /**
-     * Simpan Nilai (Bulk Update/Create)
+     * Menyimpan Nilai Baru (Store)
      */
-    public function store(Request $request, $schedule_id)
+    public function store(Request $request, $scheduleId)
     {
-        // Validasi input array
+        $schedule = Schedule::findOrFail($scheduleId);
+
         $request->validate([
             'grades' => 'required|array',
             'grades.*.tugas' => 'nullable|numeric|min:0|max:100',
@@ -60,33 +46,106 @@ class GradeController extends Controller
             'grades.*.uas'   => 'nullable|numeric|min:0|max:100',
         ]);
 
-        DB::transaction(function () use ($request, $schedule_id) {
-            foreach ($request->grades as $student_id => $data) {
-
-                // Ambil nilai, jika kosong anggap 0
+        DB::transaction(function () use ($request, $schedule) {
+            foreach ($request->grades as $studentId => $data) {
                 $tugas = $data['tugas'] ?? 0;
                 $uts   = $data['uts'] ?? 0;
                 $uas   = $data['uas'] ?? 0;
 
-                // Rumus Nilai Akhir: 30% Tugas + 30% UTS + 40% UAS
-                $nilai_akhir = ($tugas * 0.3) + ($uts * 0.3) + ($uas * 0.4);
+                // RUMUS BARU: 20% Tugas + 30% UTS + 50% UAS
+                $final = ($tugas * 0.20) + ($uts * 0.30) + ($uas * 0.50);
 
-                // Simpan ke database
+                Grade::create([
+                    'id_jadwal' => $schedule->id,
+                    'id_siswa'  => $studentId,
+                    'tugas'     => $tugas,
+                    'uts'       => $uts,
+                    'uas'       => $uas,
+                    'nilai_akhir' => $final,
+                ]);
+            }
+        });
+
+        return redirect()->route('guru.dashboard')
+            ->with('success', 'Nilai berhasil disimpan!');
+    }
+
+    /**
+     * Menampilkan Form Edit Nilai
+     */
+    public function edit($scheduleId)
+    {
+        $schedule = Schedule::with(['kelas', 'subject'])->findOrFail($scheduleId);
+
+        $students = Student::where('id_kelas', $schedule->id_kelas)
+            ->orderBy('nama_siswa', 'asc')
+            ->get();
+
+        $grades = Grade::where('id_jadwal', $scheduleId)
+            ->get()
+            ->keyBy('id_siswa');
+
+        return view('guru.grades.edit', compact('schedule', 'students', 'grades'));
+    }
+
+    /**
+     * Menyimpan Perubahan Nilai (Update)
+     */
+    public function update(Request $request, $scheduleId)
+    {
+        $schedule = Schedule::findOrFail($scheduleId);
+
+        $request->validate([
+            'grades' => 'required|array',
+            'grades.*.tugas' => 'nullable|numeric|min:0|max:100',
+            'grades.*.uts'   => 'nullable|numeric|min:0|max:100',
+            'grades.*.uas'   => 'nullable|numeric|min:0|max:100',
+        ]);
+
+        DB::transaction(function () use ($request, $schedule) {
+            foreach ($request->grades as $studentId => $data) {
+                $tugas = $data['tugas'] ?? 0;
+                $uts   = $data['uts'] ?? 0;
+                $uas   = $data['uas'] ?? 0;
+
+                // RUMUS BARU: 20% Tugas + 30% UTS + 50% UAS
+                $final = ($tugas * 0.20) + ($uts * 0.30) + ($uas * 0.50);
+
                 Grade::updateOrCreate(
                     [
-                        'id_jadwal' => $schedule_id,
-                        'nis_siswa' => $data['nis'] // Kunci pencarian (NIS)
+                        'id_jadwal' => $schedule->id,
+                        'id_siswa'  => $studentId,
                     ],
                     [
                         'tugas'       => $tugas,
                         'uts'         => $uts,
                         'uas'         => $uas,
-                        'nilai_akhir' => $nilai_akhir
+                        'nilai_akhir' => $final,
                     ]
                 );
             }
         });
 
-        return redirect()->route('guru.dashboard')->with('success', 'Nilai berhasil disimpan!');
+        return redirect()->route('guru.dashboard')
+            ->with('success', 'Perubahan nilai berhasil disimpan!');
+    }
+
+    public function print($scheduleId)
+    {
+        // 1. Ambil Data Jadwal, Kelas, Mapel, Guru
+        $schedule = Schedule::with(['kelas', 'subject', 'teacher'])->findOrFail($scheduleId);
+
+        // 2. Ambil Siswa
+        $students = Student::where('id_kelas', $schedule->id_kelas)
+            ->orderBy('nama_siswa', 'asc')
+            ->get();
+
+        // 3. Ambil Nilai
+        $grades = Grade::where('id_jadwal', $scheduleId)
+            ->get()
+            ->keyBy('id_siswa');
+
+        // 4. Return ke View Khusus Cetak
+        return view('guru.grades.print', compact('schedule', 'students', 'grades'));
     }
 }

@@ -11,10 +11,15 @@ class SubjectController extends Controller
     /**
      * Menampilkan daftar mata pelajaran
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Gunakan paginate() agar $subjects->links() di view berfungsi
-        $subjects = Subject::orderBy('nama_mapel', 'asc')->paginate(10);
+        $query = Subject::query();
+
+        if ($request->has('search')) {
+            $query->where('nama_mapel', 'like', "%{$request->search}%");
+        }
+
+        $subjects = $query->orderBy('nama_mapel', 'asc')->paginate(10);
         return view('tu.subjects.index', compact('subjects'));
     }
 

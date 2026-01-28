@@ -134,4 +134,13 @@ class TeacherController extends Controller
         return redirect()->route('tu.teachers.index')
             ->with('error', 'Data guru & akun login telah dihapus.');
     }
+
+    public function print()
+    {
+        // Ambil semua data guru, urutkan nama
+        $teachers = Teacher::orderBy('nama_guru', 'asc')->get();
+
+        // Return ke View Khusus Cetak
+        return view('tu.teachers.print', compact('teachers'));
+    }
 }

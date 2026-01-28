@@ -46,4 +46,22 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Relasi User ke Guru (One to One)
+     * Menghubungkan tabel users.id dengan teachers.id_user
+     */
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class, 'id_user');
+    }
+
+    /**
+     * Relasi User ke Siswa (One to One)
+     * Menghubungkan tabel users.id dengan students.id_user
+     */
+    public function student()
+    {
+        return $this->hasOne(Student::class, 'id_user');
+    }
 }
