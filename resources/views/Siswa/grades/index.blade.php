@@ -9,6 +9,7 @@
     <div class="py-12 bg-slate-50 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
+            {{-- Informasi Siswa --}}
             <div
                 class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
                 <div>
@@ -24,6 +25,7 @@
                 </div>
             </div>
 
+            {{-- Tabel Nilai --}}
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-xl border border-gray-100">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -44,27 +46,24 @@
                                 <tr class="hover:bg-slate-50 transition">
                                     <td class="p-4 text-center text-gray-400">{{ $index + 1 }}</td>
                                     <td class="p-4 font-bold text-gray-800">
-                                        {{-- PERBAIKAN: Gunakan 'jadwal', bukan 'schedule' --}}
-                                        {{ $grade->jadwal->subject->nama_mapel ?? 'Mapel Dihapus' }}
+                                        {{-- Mengambil Nama Mapel via relasi jadwal -> subject --}}
+                                        {{ $grade->jadwal->subject->nama_mapel ?? 'Mata Pelajaran Tidak Ditemukan' }}
                                     </td>
                                     <td class="p-4 text-gray-500 text-xs">
                                         <div class="flex items-center gap-2">
                                             <i class="fa-solid fa-user-tie"></i>
-                                            {{ $grade->jadwal->teacher->nama_guru ?? '-' }}
+                                            {{ $grade->jadwal->teacher->nama_guru ?? 'Guru Tidak Ditemukan' }}
                                         </div>
                                     </td>
                                     <td class="p-4 text-center text-gray-600">{{ $grade->tugas }}</td>
                                     <td class="p-4 text-center text-gray-600">{{ $grade->uts }}</td>
                                     <td class="p-4 text-center text-gray-600">{{ $grade->uas }}</td>
-                                    <td class="p-4 text-center font-bold text-emerald-700 bg-emerald-50 rounded">
+                                    <td class="p-4 text-center font-bold text-emerald-700 bg-emerald-50/50">
                                         {{ $grade->nilai_akhir }}
                                     </td>
                                     <td class="p-4 text-center">
                                         @php
                                             $na = $grade->nilai_akhir;
-                                            $huruf = 'E';
-                                            $badge = 'bg-red-100 text-red-700';
-
                                             if ($na >= 85) {
                                                 $huruf = 'A';
                                                 $badge = 'bg-green-100 text-green-700';
@@ -77,6 +76,9 @@
                                             } elseif ($na >= 50) {
                                                 $huruf = 'D';
                                                 $badge = 'bg-orange-100 text-orange-700';
+                                            } else {
+                                                $huruf = 'E';
+                                                $badge = 'bg-red-100 text-red-700';
                                             }
                                         @endphp
                                         <span class="px-2 py-1 rounded font-bold text-xs {{ $badge }}">
@@ -86,10 +88,10 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="p-8 text-center text-gray-400">
+                                    <td colspan="8" class="p-12 text-center text-gray-400">
                                         <div class="flex flex-col items-center">
-                                            <i class="fa-solid fa-file-circle-xmark text-4xl mb-2 text-gray-300"></i>
-                                            <p>Belum ada nilai yang diinput oleh guru.</p>
+                                            <i class="fa-solid fa-file-circle-xmark text-5xl mb-3 text-gray-200"></i>
+                                            <p class="text-lg font-medium">Belum ada nilai yang diinput oleh guru.</p>
                                         </div>
                                     </td>
                                 </tr>

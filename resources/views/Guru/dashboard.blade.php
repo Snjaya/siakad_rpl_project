@@ -107,12 +107,6 @@
 
                             {{-- Info Kanan: Tombol Aksi Cepat --}}
                             <div class="flex gap-2 w-full md:w-auto">
-                                {{-- Tombol Lihat Siswa --}}
-                                <a href="{{ route('guru.students.index', ['id_kelas' => $jadwal->id_kelas]) }}"
-                                    class="flex-1 md:flex-none px-4 py-2 bg-white border border-gray-300 text-gray-600 rounded-lg text-sm font-bold hover:bg-gray-50 transition flex items-center justify-center">
-                                    <i class="fa-solid fa-users mr-2"></i> Absen
-                                </a>
-
                                 {{-- Tombol Input Nilai --}}
                                 <a href="{{ route('guru.grades.create', $jadwal->id) }}"
                                     class="flex-1 md:flex-none px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 shadow-sm hover:shadow transition flex items-center justify-center">
