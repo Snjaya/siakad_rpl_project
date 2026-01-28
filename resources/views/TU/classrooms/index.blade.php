@@ -33,10 +33,10 @@
                 {{-- HEADER TOOLS: Search & Add --}}
                 <div class="p-6 border-b border-gray-100 bg-white">
                     <form method="GET" action="{{ route('tu.classrooms.index') }}"
-                        class="flex flex-col md:flex-row justify-between items-center gap-4">
+                        class="flex flex-col lg:flex-row justify-between items-center gap-4">
 
                         {{-- Kiri: Total & Search --}}
-                        <div class="w-full md:w-auto flex flex-col md:flex-row gap-4 items-center">
+                        <div class="w-full lg:w-auto flex flex-col md:flex-row gap-4 items-center">
                             <div class="text-gray-500 text-sm font-medium whitespace-nowrap">
                                 Total Kelas: <span
                                     class="text-emerald-600 font-bold text-lg">{{ $classrooms->count() }}</span>
@@ -53,9 +53,9 @@
                         </div>
 
                         {{-- Kanan: Tombol Aksi --}}
-                        <div class="flex flex-row gap-2 w-full md:w-auto">
+                        <div class="flex flex-row gap-2 w-full lg:w-auto">
                             <a href="{{ route('tu.classrooms.create') }}"
-                                class="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm hover:shadow transition flex items-center justify-center gap-2 whitespace-nowrap">
+                                class="flex-1 lg:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm hover:shadow transition flex items-center justify-center gap-2 whitespace-nowrap">
                                 <i class="fa-solid fa-plus text-sm"></i>
                                 <span>Tambah Kelas</span>
                             </a>
@@ -83,11 +83,9 @@
                                     <td class="p-4 text-center text-gray-400 font-medium">
                                         {{ $index + 1 }}
                                     </td>
-                                    <td class="p-4">
-                                        <span
-                                            class="font-bold text-gray-800 text-base group-hover:text-emerald-600 transition">
-                                            {{ $classroom->nama_kelas }}
-                                        </span>
+                                    <td
+                                        class="p-4 font-bold text-gray-800 text-base group-hover:text-emerald-600 transition">
+                                        {{ $classroom->nama_kelas }}
                                     </td>
                                     <td class="p-4 text-gray-600 font-medium">
                                         {{ $classroom->jurusan }}
@@ -117,6 +115,14 @@
                                     </td>
                                     <td class="p-4 text-center">
                                         <div class="flex justify-center gap-2">
+                                            {{-- TOMBOL BARU: CETAK REKAP NILAI KELAS --}}
+                                            <a href="{{ route('tu.classrooms.print_grades', $classroom->id) }}"
+                                                target="_blank"
+                                                class="w-8 h-8 flex items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200 transition"
+                                                title="Cetak Rekap Nilai Kelas">
+                                                <i class="fa-solid fa-print"></i>
+                                            </a>
+
                                             <a href="{{ route('tu.classrooms.edit', $classroom->id) }}"
                                                 class="w-8 h-8 flex items-center justify-center rounded-lg bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-700 border border-yellow-200 transition"
                                                 title="Edit Kelas">
@@ -178,6 +184,10 @@
                             </div>
 
                             <div class="flex gap-2 pl-2">
+                                <a href="{{ route('tu.classrooms.print_grades', $classroom->id) }}" target="_blank"
+                                    class="flex-1 py-2 text-center rounded-lg bg-emerald-50 text-emerald-700 text-sm font-semibold hover:bg-emerald-100 border border-emerald-200 transition">
+                                    <i class="fa-solid fa-print mr-1"></i> Nilai
+                                </a>
                                 <a href="{{ route('tu.classrooms.edit', $classroom->id) }}"
                                     class="flex-1 py-2 text-center rounded-lg bg-yellow-50 text-yellow-700 text-sm font-semibold hover:bg-yellow-100 border border-yellow-200 transition">
                                     <i class="fa-solid fa-pen mr-1"></i> Edit

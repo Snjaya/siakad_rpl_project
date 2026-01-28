@@ -216,4 +216,18 @@ class StudentController extends Controller
 
         return redirect()->back()->with('success', $msg);
     }
+
+    public function printAllGrades($id)
+    {
+        // 1. Ambil data siswa beserta kelasnya
+        $student = Student::with('kelas')->findOrFail($id);
+
+        // 2. Ambil semua nilai siswa ini, hubungkan ke jadwal -> mapel -> guru
+        $grades = \App\Models\Grade::with(['schedule.subject', 'schedule.teacher'])
+            ->where('id_siswa', $id)
+            ->get();
+
+        // 3. Kelompokkan nilai berdasarkan tahun ajaran (opsional tapi bagus untuk kerapihan)
+        return view('tu.students.print_all_grades', compact('student', 'grades'));
+    }
 }

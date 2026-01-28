@@ -35,11 +35,10 @@
                     <form method="GET" action="{{ route('tu.students.index') }}"
                         class="flex flex-col lg:flex-row justify-between items-center gap-4">
 
-                        {{-- Kiri: Total & Search --}}
+                        {{-- Kiri: Total, Search & Filter --}}
                         <div class="w-full lg:w-auto flex flex-col md:flex-row gap-3 items-center">
                             <div class="text-gray-500 text-sm font-medium whitespace-nowrap">
-                                Total Siswa: <span
-                                    class="text-emerald-600 font-bold text-lg">{{ $students->total() }}</span>
+                                Total: <span class="text-emerald-600 font-bold text-lg">{{ $students->total() }}</span>
                             </div>
 
                             {{-- Input Search --}}
@@ -52,11 +51,10 @@
                                     placeholder="Cari nama atau NIS...">
                             </div>
 
-                            {{-- Dropdown Filter Kelas (NEW) --}}
+                            {{-- Dropdown Filter Kelas --}}
                             <select name="id_kelas" onchange="this.form.submit()"
                                 class="w-full md:w-48 py-2 pl-3 pr-8 text-sm text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition cursor-pointer">
                                 <option value="">Semua Kelas</option>
-                                {{-- Pastikan Controller mengirim variabel $classes --}}
                                 @foreach ($classes as $kelas)
                                     <option value="{{ $kelas->id }}"
                                         {{ request('id_kelas') == $kelas->id ? 'selected' : '' }}>
@@ -66,17 +64,15 @@
                             </select>
                         </div>
 
-                        {{-- Kanan: Tombol Aksi --}}
+                        {{-- Kanan: Tombol Cetak & Tambah --}}
                         <div class="flex flex-row gap-2 w-full lg:w-auto">
-                            {{-- TOMBOL CETAK (NEW) --}}
                             <a href="{{ route('tu.students.print', ['id_kelas' => request('id_kelas')]) }}"
                                 target="_blank"
                                 class="flex-1 lg:flex-none bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm hover:shadow transition flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-print"></i>
-                                <span class="hidden md:inline">Cetak</span>
+                                <span class="hidden md:inline">Cetak Daftar</span>
                             </a>
 
-                            {{-- Tombol Tambah --}}
                             <a href="{{ route('tu.students.create') }}"
                                 class="flex-1 lg:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm hover:shadow transition flex items-center justify-center gap-2 whitespace-nowrap">
                                 <i class="fa-solid fa-plus text-sm"></i>
@@ -92,7 +88,7 @@
                         <thead>
                             <tr
                                 class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-bold border-b border-gray-200">
-                                <th class="p-4 w-20 text-center">#</th>
+                                <th class="p-4 w-16 text-center">#</th>
                                 <th class="p-4">Identitas Siswa</th>
                                 <th class="p-4">Kelas & Jurusan</th>
                                 <th class="p-4">Kontak / Akun</th>
@@ -111,7 +107,7 @@
                                                 class="font-bold text-gray-800 text-base group-hover:text-emerald-600 transition">{{ $student->nama_siswa }}</span>
                                             <span class="text-xs text-gray-400">NIS: {{ $student->nis }}</span>
                                             @if ($student->jenis_kelamin)
-                                                <span class="text-[10px] mt-1 text-gray-400">
+                                                <span class="text-[10px] mt-1 text-gray-400 flex items-center gap-1">
                                                     <i
                                                         class="fa-solid {{ $student->jenis_kelamin == 'L' ? 'fa-mars text-blue-400' : 'fa-venus text-pink-400' }}"></i>
                                                     {{ $student->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}
@@ -140,21 +136,33 @@
                                         <div class="flex flex-col gap-1">
                                             <div class="text-gray-600 flex items-center gap-2">
                                                 <i class="fa-regular fa-envelope text-gray-400 text-xs"></i>
-                                                <span>{{ $student->user->email ?? 'Email tidak ada' }}</span>
+                                                <span
+                                                    class="text-xs">{{ $student->user->email ?? 'Email tidak ada' }}</span>
                                             </div>
                                             <div class="text-gray-600 flex items-center gap-2">
                                                 <i class="fa-solid fa-phone text-gray-400 text-xs"></i>
-                                                <span>{{ $student->no_hp ?? '-' }}</span>
+                                                <span class="text-xs">{{ $student->no_hp ?? '-' }}</span>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="p-4 text-center">
                                         <div class="flex justify-center gap-2">
+                                            {{-- TOMBOL: CETAK TRANSKRIP (BARU) --}}
+                                            <a href="{{ route('tu.students.print_all_grades', $student->id) }}"
+                                                target="_blank"
+                                                class="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 transition"
+                                                title="Cetak Transkrip Nilai">
+                                                <i class="fa-solid fa-file-invoice"></i>
+                                            </a>
+
+                                            {{-- TOMBOL: EDIT --}}
                                             <a href="{{ route('tu.students.edit', $student->id) }}"
                                                 class="w-8 h-8 flex items-center justify-center rounded-lg bg-yellow-50 text-yellow-600 hover:bg-yellow-100 hover:text-yellow-700 border border-yellow-200 transition"
                                                 title="Edit Data">
                                                 <i class="fa-solid fa-pen-to-square"></i>
                                             </a>
+
+                                            {{-- TOMBOL: HAPUS --}}
                                             <form action="{{ route('tu.students.destroy', $student->id) }}"
                                                 method="POST"
                                                 onsubmit="return confirm('Apakah Anda yakin ingin menghapus data siswa {{ $student->nama_siswa }}? Akun login juga akan terhapus.');">
@@ -170,10 +178,10 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="p-8 text-center text-gray-400 bg-slate-50">
+                                    <td colspan="5" class="p-12 text-center text-gray-400 bg-slate-50">
                                         <div class="flex flex-col items-center justify-center">
-                                            <i class="fa-solid fa-folder-open text-4xl mb-3 text-gray-300"></i>
-                                            <p>Belum ada data siswa yang terdaftar.</p>
+                                            <i class="fa-solid fa-folder-open text-5xl mb-3 text-gray-300"></i>
+                                            <p class="text-lg">Belum ada data siswa yang terdaftar.</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -199,9 +207,8 @@
                                         {{ $student->kelas->nama_kelas }}
                                     </span>
                                 @else
-                                    <span class="bg-red-100 text-red-700 text-xs font-bold px-2 py-1 rounded">
-                                        No Class
-                                    </span>
+                                    <span class="bg-red-100 text-red-700 text-xs font-bold px-2 py-1 rounded">No
+                                        Class</span>
                                 @endif
                             </div>
 
@@ -217,29 +224,33 @@
                             </div>
 
                             <div class="flex gap-2 pl-2">
+                                <a href="{{ route('tu.students.print_all_grades', $student->id) }}" target="_blank"
+                                    class="flex-1 py-2 text-center rounded-lg bg-blue-50 text-blue-700 text-sm font-semibold border border-blue-200">
+                                    <i class="fa-solid fa-file-invoice mr-1"></i> Nilai
+                                </a>
                                 <a href="{{ route('tu.students.edit', $student->id) }}"
-                                    class="flex-1 py-2 text-center rounded-lg bg-yellow-50 text-yellow-700 text-sm font-semibold hover:bg-yellow-100 border border-yellow-200 transition">
+                                    class="flex-1 py-2 text-center rounded-lg bg-yellow-50 text-yellow-700 text-sm font-semibold border border-yellow-200">
                                     <i class="fa-solid fa-pen mr-1"></i> Edit
                                 </a>
                                 <form action="{{ route('tu.students.destroy', $student->id) }}" method="POST"
                                     class="flex-1" onsubmit="return confirm('Hapus siswa ini?');">
                                     @csrf @method('DELETE')
                                     <button type="submit"
-                                        class="w-full py-2 text-center rounded-lg bg-red-50 text-red-700 text-sm font-semibold hover:bg-red-100 border border-red-200 transition">
+                                        class="w-full py-2 text-center rounded-lg bg-red-50 text-red-700 text-sm font-semibold border border-red-200">
                                         <i class="fa-solid fa-trash mr-1"></i> Hapus
                                     </button>
                                 </form>
                             </div>
                         </div>
                     @empty
-                        <div class="text-center p-6 text-gray-500">
+                        <div class="text-center p-6 text-gray-500 bg-white rounded-xl shadow-sm">
                             Belum ada data siswa.
                         </div>
                     @endforelse
                 </div>
 
                 <div class="p-4 border-t border-gray-100 bg-white">
-                    {{ $students->links() }}
+                    {{ $students->appends(request()->query())->links() }}
                 </div>
             </div>
         </div>

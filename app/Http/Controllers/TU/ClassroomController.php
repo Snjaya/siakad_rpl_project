@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\TU;
 
-use App\Http\Controllers\Controller;
-use App\Models\Classroom;
+use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\Classroom;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class ClassroomController extends Controller
 {
@@ -76,5 +77,34 @@ class ClassroomController extends Controller
         $classroom->delete();
 
         return redirect()->route('tu.classrooms.index')->with('error', 'Data kelas berhasil dihapus.');
+    }
+
+    public function printClassGrades($id)
+    {
+        // 1. Ambil data kelas
+        $classroom = \App\Models\Classroom::findOrFail($id);
+
+        // 2. Ambil data siswa di kelas tersebut
+        $students = \App\Models\Student::where('id_kelas', $id)
+            ->orderBy('nama_siswa', 'asc')
+            ->get();
+
+        // 3. Ambil ID para siswa tersebut untuk mengambil nilai mereka
+        $studentIds = $students->pluck('id');
+
+        // 4. Ambil semua nilai milik siswa di kelas ini
+        // Kita panggil manual agar tidak error "nis_siswa"
+        $grades = \App\Models\Grade::with(['schedule.subject'])
+            ->whereIn('id_siswa', $studentIds)
+            ->get();
+
+        // 5. Ambil daftar mata pelajaran unik untuk Header Tabel
+        $subjects = \App\Models\Schedule::where('id_kelas', $id)
+            ->with('subject')
+            ->get()
+            ->pluck('subject.nama_mapel', 'subject.id')
+            ->unique();
+
+        return view('tu.classrooms.print_grades', compact('classroom', 'students', 'grades', 'subjects'));
     }
 }

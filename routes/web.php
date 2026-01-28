@@ -86,6 +86,11 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
     Route::get('/promotion', [App\Http\Controllers\TU\StudentController::class, 'promotionPage'])->name('tu.students.promotion');
     Route::post('/promotion', [App\Http\Controllers\TU\StudentController::class, 'promote'])->name('tu.students.promote');
 
+    // Tambahkan di dalam Route Group TU
+    Route::get('/students/{student}/print-all-grades', [App\Http\Controllers\TU\StudentController::class, 'printAllGrades'])->name('tu.students.print_all_grades');
+    Route::get('/classrooms/{classroom}/print-grades', [App\Http\Controllers\TU\ClassroomController::class, 'printClassGrades'])->name('tu.classrooms.print_grades');    // Data Guru
+
+
     // Data Guru
     Route::resource('teachers', TeacherController::class)->names([
         'index' => 'tu.teachers.index',
