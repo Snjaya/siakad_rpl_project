@@ -28,15 +28,14 @@
             request()->routeIs('guru.dashboard') ||
             request()->routeIs('siswa.dashboard')"
             class="flex items-center px-3 py-2.5 mb-1 rounded-lg transition-all
-    {{ request()->routeIs('admin.dashboard') ||
-    request()->routeIs('tu.dashboard') ||
-    request()->routeIs('guru.dashboard') ||
-    request()->routeIs('siswa.dashboard')
-        ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500'
-        : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+            {{ request()->routeIs('admin.dashboard') ||
+            request()->routeIs('tu.dashboard') ||
+            request()->routeIs('guru.dashboard') ||
+            request()->routeIs('siswa.dashboard')
+                ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500'
+                : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
 
             <i class="fa-solid fa-house w-6 text-center text-lg"></i>
-
             <span class="ml-3 font-medium text-sm whitespace-nowrap" x-show="sidebarOpen">
                 Dashboard
             </span>
@@ -76,7 +75,6 @@
                     <span class="ml-3 text-sm font-medium whitespace-nowrap" x-show="sidebarOpen">Data Siswa</span>
                 </x-responsive-nav-link>
 
-                {{-- FITUR BARU: KENAIKAN KELAS --}}
                 <x-responsive-nav-link :href="route('tu.students.promotion')" :active="request()->routeIs('tu.students.promotion')"
                     class="flex items-center px-3 py-2.5 mb-1 rounded-lg transition-all {{ request()->routeIs('tu.students.promotion') ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
                     <i class="fa-solid fa-angles-up w-6 text-center"></i>
@@ -118,16 +116,34 @@
                 <p class="px-4 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap transition-opacity"
                     x-show="sidebarOpen">Aktivitas</p>
 
-                <x-responsive-nav-link :href="route('guru.schedules.index')" :active="request()->routeIs('guru.schedules.*') || request()->routeIs('guru.grades.*')"
-                    class="flex items-center px-3 py-2.5 mb-1 rounded-lg transition-all {{ request()->routeIs('guru.schedules.*') || request()->routeIs('guru.grades.*') ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                {{-- 1. MENU JADWAL MENGAJAR --}}
+                <x-responsive-nav-link :href="route('guru.schedules.index')" :active="request()->routeIs('guru.schedules.index')"
+                    class="flex items-center px-3 py-2.5 mb-1 rounded-lg transition-all {{ request()->routeIs('guru.schedules.index') ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
                     <i class="fa-solid fa-calendar-days w-6 text-center"></i>
-                    <span class="ml-3 text-sm font-medium whitespace-nowrap" x-show="sidebarOpen">Jadwal & Nilai</span>
+                    <span class="ml-3 text-sm font-medium whitespace-nowrap" x-show="sidebarOpen">Jadwal Mengajar</span>
+                </x-responsive-nav-link>
+
+                {{-- 2. MENU INPUT NILAI --}}
+                <x-responsive-nav-link :href="route('guru.grades.index')" :active="request()->routeIs('guru.grades.index') ||
+                    request()->routeIs('guru.grades.create') ||
+                    request()->routeIs('guru.grades.edit')"
+                    class="flex items-center px-3 py-2.5 mb-1 rounded-lg transition-all {{ request()->routeIs('guru.grades.*') && !request()->routeIs('guru.grades.recap_index') ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fa-solid fa-pen-to-square w-6 text-center"></i>
+                    <span class="ml-3 text-sm font-medium whitespace-nowrap" x-show="sidebarOpen">Input Nilai</span>
                 </x-responsive-nav-link>
 
                 <x-responsive-nav-link :href="route('guru.students.index')" :active="request()->routeIs('guru.students.*')"
-                    class="flex items-center px-3 py-2.5 rounded-lg transition-all {{ request()->routeIs('guru.students.*') ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    class="flex items-center px-3 py-2.5 mb-1 rounded-lg transition-all {{ request()->routeIs('guru.students.*') ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
                     <i class="fa-solid fa-users w-6 text-center"></i>
                     <span class="ml-3 text-sm font-medium whitespace-nowrap" x-show="sidebarOpen">Data Siswa Ajar</span>
+                </x-responsive-nav-link>
+
+                {{-- 3. MENU REKAP NILAI --}}
+                <x-responsive-nav-link :href="route('guru.grades.recap_index')" :active="request()->routeIs('guru.grades.recap_index')"
+                    class="flex items-center px-3 py-2.5 mb-1 rounded-lg transition-all 
+                    {{ request()->routeIs('guru.grades.recap_index') ? 'bg-slate-800 text-emerald-400 border-l-4 border-emerald-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fa-solid fa-print w-6 text-center"></i>
+                    <span class="ml-3 text-sm font-bold whitespace-nowrap" x-show="sidebarOpen">Rekap Nilai</span>
                 </x-responsive-nav-link>
             </div>
         @endif
@@ -154,10 +170,16 @@
     </div>
 
     <div class="p-4 bg-slate-950 border-t border-slate-800 flex-shrink-0">
+
         <div class="flex items-center gap-3 mb-4 overflow-hidden">
             <div
                 class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center text-white text-sm font-bold shadow-lg ring-2 ring-slate-800">
-                {{ strtoupper(substr(Auth::user()->username, 0, 1)) }}
+                @if (Auth::user()->foto)
+                    <img src="{{ asset('storage/' . Auth::user()->foto) }}" alt="Foto"
+                        class="w-full h-full object-cover rounded-full">
+                @else
+                    {{ strtoupper(substr(Auth::user()->username, 0, 1)) }}
+                @endif
             </div>
             <div class="overflow-hidden transition-all duration-300" x-show="sidebarOpen">
                 <p class="text-sm font-semibold text-white truncate max-w-[140px] leading-tight">
@@ -168,6 +190,17 @@
                 </div>
             </div>
         </div>
+
+        {{-- TOMBOL PROFIL SAYA (KHUSUS GURU) --}}
+        @if (Auth::user()->role == 'Guru')
+            <a href="{{ route('guru.profile.edit') }}"
+                class="group flex items-center justify-center w-full py-2 mb-2 text-sm font-medium text-slate-400 hover:text-white bg-slate-900 hover:bg-emerald-600 rounded-lg transition-all duration-200 border border-slate-800 hover:border-emerald-500">
+                <i class="fa-solid fa-user-gear transition-transform group-hover:scale-110"></i>
+                <span class="ml-2 whitespace-nowrap transition-all duration-300" x-show="sidebarOpen">Profil
+                    Saya</span>
+            </a>
+        @endif
+
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit"

@@ -11,15 +11,16 @@ class ScheduleController extends Controller
 {
     public function index()
     {
-        $guru = Auth::user()->teacher;
+        $user = \Illuminate\Support\Facades\Auth::user();
+        $teacher = \App\Models\Teacher::where('id_user', $user->id)->first();
 
-        // Ambil SEMUA jadwal, urutkan berdasarkan Hari (Senin->Sabtu) dan Jam
-        $schedules = Schedule::with(['kelas', 'subject'])
-            ->where('id_guru', $guru->id)
+        // Pastikan ini mengambil get(), BUKAN groupBy()
+        $schedules = \App\Models\Schedule::with(['kelas', 'subject'])
+            ->where('id_guru', $teacher->id)
+            // Urutkan manual agar hari Senin muncul duluan (opsional)
             ->orderByRaw("FIELD(hari, 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu')")
             ->orderBy('jam_mulai', 'asc')
-            ->get()
-            ->groupBy('hari'); // Kelompokkan data per Hari
+            ->get();
 
         return view('guru.schedules.index', compact('schedules'));
     }

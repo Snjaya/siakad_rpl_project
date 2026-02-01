@@ -81,15 +81,13 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
     // --- ⚠️ PENTING: ROUTE PRINT WAJIB DI ATAS RESOURCE ---
     Route::get('/teachers/print', [TeacherController::class, 'print'])->name('tu.teachers.print');
     Route::get('/students/print', [StudentController::class, 'print'])->name('tu.students.print');
-    Route::get('/schedules/print', [App\Http\Controllers\TU\ScheduleController::class, 'print'])->name('tu.schedules.print');
+    Route::get('/schedules/print', [ScheduleController::class, 'print'])->name('tu.schedules.print');
 
-    Route::get('/promotion', [App\Http\Controllers\TU\StudentController::class, 'promotionPage'])->name('tu.students.promotion');
-    Route::post('/promotion', [App\Http\Controllers\TU\StudentController::class, 'promote'])->name('tu.students.promote');
+    Route::get('/promotion', [StudentController::class, 'promotionPage'])->name('tu.students.promotion');
+    Route::post('/promotion', [StudentController::class, 'promote'])->name('tu.students.promote');
 
-    // Tambahkan di dalam Route Group TU
-    Route::get('/students/{student}/print-all-grades', [App\Http\Controllers\TU\StudentController::class, 'printAllGrades'])->name('tu.students.print_all_grades');
-    Route::get('/classrooms/{classroom}/print-grades', [App\Http\Controllers\TU\ClassroomController::class, 'printClassGrades'])->name('tu.classrooms.print_grades');    // Data Guru
-
+    Route::get('/students/{student}/print-all-grades', [StudentController::class, 'printAllGrades'])->name('tu.students.print_all_grades');
+    Route::get('/classrooms/{classroom}/print-grades', [ClassroomController::class, 'printClassGrades'])->name('tu.classrooms.print_grades');
 
     // Data Guru
     Route::resource('teachers', TeacherController::class)->names([
@@ -142,26 +140,42 @@ Route::middleware(['auth', 'role:TU'])->prefix('tu')->group(function () {
 // ============================================================
 // Aktor: Guru
 // ============================================================
-Route::middleware(['auth', 'role:Guru'])->prefix('guru')->group(function () {
-    Route::get('/dashboard', [GuruDashboardController::class, 'index'])->name('guru.dashboard');
-    Route::get('/schedules', [GuruScheduleController::class, 'index'])->name('guru.schedules.index');
-    Route::get('/students', [GuruStudentController::class, 'index'])->name('guru.students.index');
+Route::middleware(['auth', 'role:Guru'])->prefix('guru')->name('guru.')->group(function () {
 
-    // Manajemen Nilai
-    Route::get('/grades/{schedule}/input', [GradeController::class, 'create'])->name('guru.grades.create');
-    Route::post('/grades/{schedule}/store', [GradeController::class, 'store'])->name('guru.grades.store');
-    Route::get('/grades/{schedule}/edit', [GradeController::class, 'edit'])->name('guru.grades.edit');
-    Route::put('/grades/{schedule}/update', [GradeController::class, 'update'])->name('guru.grades.update');
-    Route::get('/grades/{schedule}/print', [GradeController::class, 'print'])->name('guru.grades.print');
+    Route::get('/dashboard', [GuruDashboardController::class, 'index'])->name('dashboard');
+
+    // 1. JADWAL MENGAJAR (Hanya Melihat Jadwal)
+    Route::get('/schedules', [GuruScheduleController::class, 'index'])->name('schedules.index');
+
+    Route::get('/students', [GuruStudentController::class, 'index'])->name('students.index');
+
+    // 2. MANAJEMEN INPUT NILAI (Fitur Terpisah)
+    // Halaman List Kelas untuk Input Nilai
+    Route::get('/grades/input', [GradeController::class, 'indexInput'])->name('grades.index');
+
+    // Proses Input/Edit Nilai
+    Route::get('/grades/{schedule}/input', [GradeController::class, 'create'])->name('grades.create');
+    Route::post('/grades/{schedule}/store', [GradeController::class, 'store'])->name('grades.store');
+    Route::get('/grades/{schedule}/edit', [GradeController::class, 'edit'])->name('grades.edit');
+    Route::put('/grades/{schedule}/update', [GradeController::class, 'update'])->name('grades.update');
+    Route::get('/grades/{schedule}/print', [GradeController::class, 'print'])->name('grades.print');
+
+    // 3. REKAP NILAI (Fitur Cetak)
+    Route::get('/recap-grades', [GradeController::class, 'recapIndex'])->name('grades.recap_index');
+    Route::get('/grades/recap/{schedule}', [GradeController::class, 'printRecap'])->name('grades.print_recap');
+
+    // === FITUR B.3: UPDATE PROFIL ===
+    Route::get('/profile/edit', [App\Http\Controllers\Guru\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile/update', [App\Http\Controllers\Guru\ProfileController::class, 'update'])->name('profile.update');
 });
 
 // ============================================================
 // Aktor: Siswa
 // ============================================================
-Route::middleware(['auth', 'role:Siswa'])->prefix('siswa')->group(function () {
-    Route::get('/dashboard', [SiswaDashboardController::class, 'index'])->name('siswa.dashboard');
-    Route::get('/my-schedule', [SiswaScheduleController::class, 'index'])->name('siswa.schedules.index');
-    Route::get('/my-grades', [SiswaGradeController::class, 'index'])->name('siswa.grades.index');
+Route::middleware(['auth', 'role:Siswa'])->prefix('siswa')->name('siswa.')->group(function () {
+    Route::get('/dashboard', [SiswaDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/my-schedule', [SiswaScheduleController::class, 'index'])->name('schedules.index');
+    Route::get('/my-grades', [SiswaGradeController::class, 'index'])->name('grades.index');
 });
 
 /**
