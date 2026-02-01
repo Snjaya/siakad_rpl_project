@@ -176,6 +176,9 @@ Route::middleware(['auth', 'role:Siswa'])->prefix('siswa')->name('siswa.')->grou
     Route::get('/dashboard', [SiswaDashboardController::class, 'index'])->name('dashboard');
     Route::get('/my-schedule', [SiswaScheduleController::class, 'index'])->name('schedules.index');
     Route::get('/my-grades', [SiswaGradeController::class, 'index'])->name('grades.index');
+
+    Route::get('/profile/edit', [App\Http\Controllers\Siswa\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile/update', [App\Http\Controllers\Siswa\ProfileController::class, 'update'])->name('profile.update');
 });
 
 /**

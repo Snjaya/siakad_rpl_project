@@ -201,6 +201,16 @@
             </a>
         @endif
 
+        {{-- TOMBOL PROFIL SAYA (KHUSUS SISWA) --}}
+        @if (Auth::user()->role == 'Siswa')
+            <a href="{{ route('siswa.profile.edit') }}"
+                class="group flex items-center justify-center w-full py-2 mb-2 text-sm font-medium text-slate-400 hover:text-white bg-slate-900 hover:bg-emerald-600 rounded-lg transition-all duration-200 border border-slate-800 hover:border-emerald-500">
+                <i class="fa-solid fa-id-card transition-transform group-hover:scale-110"></i>
+                <span class="ml-2 whitespace-nowrap transition-all duration-300" x-show="sidebarOpen">Profil
+                    Saya</span>
+            </a>
+        @endif
+
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit"
