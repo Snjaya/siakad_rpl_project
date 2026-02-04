@@ -4,34 +4,28 @@ namespace App\Http\Controllers\Siswa;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Student;
 use App\Models\Grade;
-use Illuminate\Support\Facades\Auth;
 
 class GradeController extends Controller
 {
     /**
-     * Menampilkan daftar nilai siswa (KHS)
+     * Menampilkan daftar nilai milik siswa yang sedang login
      */
     public function index()
     {
         $user = Auth::user();
 
-        // 1. Ambil data profil siswa yang login
-        $student = Student::with('kelas')->where('id_user', $user->id)->first();
+        // Ambil data siswa berdasarkan user yang login
+        $student = Student::where('id_user', $user->id)->firstOrFail();
 
-        // Jika data siswa tidak ditemukan
-        if (!$student) {
-            return redirect()->route('siswa.dashboard')->with('error', 'Profil siswa tidak ditemukan.');
-        }
-
-        // 2. Ambil data nilai (Grades)
-        // Memanggil relasi 'jadwal' dan sub-relasi 'subject' serta 'teacher'
-        $grades = Grade::with(['jadwal.subject', 'jadwal.teacher'])
-            ->where('id_siswa', $student->id)
+        // Ambil nilai berdasarkan NIS
+        $grades = Grade::with(['jadwal.subject', 'jadwal.teacher', 'jadwal.kelas'])
+            ->where('nis_siswa', $student->nis)
             ->get();
 
-        // 3. Tampilkan ke view
-        return view('siswa.grades.index', compact('student', 'grades'));
+        // PERBAIKAN: Tambahkan 'student' ke dalam compact agar bisa dibaca di View
+        return view('Siswa.grades.index', compact('grades', 'student'));
     }
 }

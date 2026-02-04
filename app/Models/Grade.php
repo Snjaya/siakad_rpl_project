@@ -9,10 +9,9 @@ class Grade extends Model
 {
     use HasFactory;
 
-    // Pastikan fillable sesuai dengan nama kolom yang ada di database
     protected $fillable = [
-        'id_jadwal',  // Sesuai update kamu
-        'id_siswa',   // Sesuai update kamu
+        'id_jadwal',
+        'nis_siswa', // Pastikan ini nis_siswa
         'tugas',
         'uts',
         'uas',
@@ -21,27 +20,21 @@ class Grade extends Model
 
     /**
      * Relasi ke Jadwal
-     * Nama fungsi 'jadwal' agar sinkron dengan $grade->jadwal di file Blade
      */
     public function jadwal()
     {
-        // Parameter kedua adalah Foreign Key di tabel grades
         return $this->belongsTo(Schedule::class, 'id_jadwal');
     }
 
     /**
      * Relasi ke Siswa
+     * Karena foreign key di grades adalah 'nis_siswa' dan merujuk ke 'nis' di tabel students
      */
     public function student()
     {
-        return $this->belongsTo(Student::class, 'id_siswa');
+        return $this->belongsTo(Student::class, 'nis_siswa', 'nis');
     }
 
-    /**
-     * Optional: Jika kamu masih ingin menyimpan fungsi dengan nama 'schedule' 
-     */
-    public function schedule()
-    {
-        return $this->jadwal();
-    }
+    // Alias agar kode lama tidak error
+    public function schedule() { return $this->jadwal(); }
 }

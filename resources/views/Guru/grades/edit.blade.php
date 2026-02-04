@@ -9,23 +9,21 @@
     <div class="py-12 bg-slate-50 min-h-screen">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            <div
-                class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div>
                     <h3 class="text-lg font-bold text-gray-800 flex items-center">
                         <i class="fa-solid fa-book-open mr-2 text-emerald-500"></i>
                         {{ $schedule->subject->nama_mapel }}
                     </h3>
                     <p class="text-gray-500 text-sm mt-1">
-                        Kelas: <span
-                            class="font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded">{{ $schedule->kelas->nama_kelas }}</span>
+                        Kelas: <span class="font-bold text-gray-800 bg-gray-100 px-2 py-0.5 rounded">{{ $schedule->kelas->nama_kelas }}</span>
                         <span class="mx-2">•</span>
                         Total Siswa: <span class="font-bold text-emerald-600">{{ $students->count() }}</span>
                     </p>
                 </div>
 
                 <div class="flex gap-2">
-                    {{-- TOMBOL CETAK BARU --}}
+                    {{-- TOMBOL CETAK --}}
                     <a href="{{ route('guru.grades.print', $schedule->id) }}" target="_blank"
                         class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition shadow-sm flex items-center">
                         <i class="fa-solid fa-print mr-2"></i> Cetak Rekap
@@ -49,7 +47,6 @@
                                 <tr>
                                     <th class="p-4 w-12 text-center">No</th>
                                     <th class="p-4">Identitas Siswa</th>
-                                    {{-- HEADER PERSENTASE BARU --}}
                                     <th class="p-4 w-32 text-center">Tugas (20%)</th>
                                     <th class="p-4 w-32 text-center">UTS (30%)</th>
                                     <th class="p-4 w-32 text-center">UAS (50%)</th>
@@ -59,6 +56,8 @@
                             <tbody class="divide-y divide-gray-100 text-sm bg-white">
                                 @foreach ($students as $index => $siswa)
                                     @php
+                                        // Variabel $grades sekarang sudah dimapping controller menjadi Key => ID Siswa
+                                        // Jadi pemanggilan ini sudah AMAN
                                         $nilai = $grades[$siswa->id] ?? null;
                                         $rowClass = $loop->even ? 'bg-gray-50' : 'bg-white';
                                     @endphp
@@ -87,8 +86,7 @@
                                                 class="w-full text-center border-gray-300 rounded focus:border-emerald-500 focus:ring-emerald-500 font-medium"
                                                 min="0" max="100" placeholder="0">
                                         </td>
-                                        <td
-                                            class="p-4 text-center font-bold text-emerald-700 bg-emerald-50 border-l border-emerald-100">
+                                        <td class="p-4 text-center font-bold text-emerald-700 bg-emerald-50 border-l border-emerald-100">
                                             {{ $nilai->nilai_akhir ?? 0 }}
                                         </td>
                                     </tr>
