@@ -16,8 +16,9 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
+
         // Ambil data siswa berdasarkan user login
-        $student = Student::where('id_user', $user->id)->first();
+        $student = Student::where('id_user', $user->id)->firstOrFail();
 
         // Setup Waktu Lokal Indonesia
         Carbon::setLocale('id');
@@ -69,8 +70,14 @@ class DashboardController extends Controller
             }
         }
 
-        // 3. Rata-rata Nilai (Menggunakan NIS sesuai perbaikan database sebelumnya)
-        $averageGrade = Grade::where('nis_siswa', $student->nis)->avg('nilai_akhir');
+        // 3. Rata-rata Nilai (FIX: Menggunakan 'id_siswa' sesuai struktur database terbaru)
+        // Sebelumnya error karena mencari 'student_id' atau 'nis_siswa'
+        $averageGrade = Grade::where('id_siswa', $student->id)->avg('nilai_akhir');
+
+        // Jika belum ada nilai, set ke 0 agar tidak error di view
+        if (is_null($averageGrade)) {
+            $averageGrade = 0;
+        }
 
         // 4. Informasi Kelas
         $classroom = Classroom::find($student->id_kelas);
@@ -79,7 +86,7 @@ class DashboardController extends Controller
         return view('Siswa.dashboard', compact(
             'student',
             'todaysSchedules',
-            'nextSchedule',  // <-- Variabel ini sekarang sudah ada isinya (atau null)
+            'nextSchedule',
             'averageGrade',
             'classroom'
         ));

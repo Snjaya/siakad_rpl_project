@@ -56,10 +56,10 @@ class GradeController extends Controller
 
         DB::transaction(function () use ($request, $schedule) {
             foreach ($request->grades as $studentId => $data) {
-                // PENTING: Ambil data siswa untuk mendapatkan NIS
+                // Pastikan siswa valid
                 $student = Student::find($studentId);
 
-                if (!$student) continue; // Skip jika siswa tidak valid
+                if (!$student) continue;
 
                 $tugas = $data['tugas'] ?? 0;
                 $uts   = $data['uts'] ?? 0;
@@ -68,7 +68,7 @@ class GradeController extends Controller
 
                 Grade::create([
                     'id_jadwal'   => $schedule->id,
-                    'nis_siswa'   => $student->nis, // GUNAKAN NIS, BUKAN ID
+                    'id_siswa'    => $student->id, // FIX: Gunakan id_siswa (ID), bukan nis_siswa
                     'tugas'       => $tugas,
                     'uts'         => $uts,
                     'uas'         => $uas,
@@ -91,15 +91,11 @@ class GradeController extends Controller
         // Ambil semua nilai pada jadwal ini
         $gradesData = Grade::where('id_jadwal', $scheduleId)->get();
 
-        // Mapping manual: Key array harus ID SISWA agar cocok dengan View
-        // Database menyimpan NIS, View meloop ID. Kita konversi di sini.
+        // Mapping: Key array menggunakan id_siswa agar cocok dengan loop di View
         $grades = [];
         foreach ($gradesData as $grade) {
-            // Cari siswa pemilik NIS ini
-            $student = Student::where('nis', $grade->nis_siswa)->first();
-            if ($student) {
-                $grades[$student->id] = $grade;
-            }
+            // FIX: Langsung gunakan id_siswa sebagai key, tidak perlu query lookup NIS lagi
+            $grades[$grade->id_siswa] = $grade;
         }
 
         return view('guru.grades.edit', compact('schedule', 'students', 'grades'));
@@ -118,7 +114,6 @@ class GradeController extends Controller
 
         DB::transaction(function () use ($request, $schedule) {
             foreach ($request->grades as $studentId => $data) {
-                // PENTING: Cari siswa by ID untuk dapatkan NIS
                 $student = Student::find($studentId);
 
                 if (!$student) continue;
@@ -128,10 +123,11 @@ class GradeController extends Controller
                 $uas   = $data['uas'] ?? 0;
                 $final = ($tugas * 0.20) + ($uts * 0.30) + ($uas * 0.50);
 
+                // FIX: Gunakan updateOrCreate dengan kunci id_jadwal & id_siswa
                 Grade::updateOrCreate(
                     [
                         'id_jadwal' => $schedule->id,
-                        'nis_siswa' => $student->nis, // GUNAKAN NIS UNTUK PENCOCOKAN
+                        'id_siswa'  => $student->id, // FIX: Gunakan id_siswa
                     ],
                     [
                         'tugas'       => $tugas,
@@ -179,8 +175,8 @@ class GradeController extends Controller
         $gradesMap = [];
 
         foreach ($gradesData as $g) {
-            $s = Student::where('nis', $g->nis_siswa)->first();
-            if($s) $gradesMap[$s->id] = $g;
+            // FIX: Langsung map pakai id_siswa
+            $gradesMap[$g->id_siswa] = $g;
         }
 
         foreach ($students as $student) {
