@@ -52,7 +52,6 @@ class DatabaseSeeder extends Seeder
                 'role' => 'Guru'
             ]);
 
-            // --- PERBAIKAN DI SINI ---
             $teacher = Teacher::create([
                 'id_user' => $user->id,
                 'nip' => $nip,
@@ -62,7 +61,6 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => $faker->randomElement(['L', 'P']),
                 'alamat' => $faker->address,
             ]);
-            // -------------------------
 
             $teacherIds[] = $teacher->id;
         }
@@ -158,10 +156,10 @@ class DatabaseSeeder extends Seeder
 
                         Grade::create([
                             'id_jadwal' => $jadwal->id,
-                            'nis_siswa' => $rs->nis,
-                            'tugas' => $tugas,
-                            'uts' => $uts,
-                            'uas' => $uas,
+                            'id_siswa'  => $rs->id, // PERBAIKAN: Gunakan id_siswa (ID), bukan nis_siswa
+                            'tugas'     => $tugas,
+                            'uts'       => $uts,
+                            'uas'       => $uas,
                             'nilai_akhir' => $akhir
                         ]);
                     }
